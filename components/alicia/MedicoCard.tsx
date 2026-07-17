@@ -1,12 +1,6 @@
 import Link from "next/link";
 import { Medico } from "@/types/alicia/medico";
-
-function iniciais(nome: string): string {
-  const partes = nome.trim().split(/\s+/);
-  const primeira = partes[0]?.[0] ?? "";
-  const ultima = partes.length > 1 ? partes[partes.length - 1][0] : "";
-  return `${primeira}${ultima}`.toUpperCase();
-}
+import { iniciais } from "@/lib/alicia/texto";
 
 interface MedicoCardProps {
   medico: Medico;

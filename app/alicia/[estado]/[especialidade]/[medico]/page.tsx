@@ -3,6 +3,9 @@ import { notFound } from "next/navigation";
 import { getEstadoPorSigla } from "@/services/alicia/estados";
 import { getEspecialidadePorId } from "@/services/alicia/especialidades";
 import { getMedicoPorSlug } from "@/services/alicia/medicos";
+import { PerfilMedicoHeader } from "@/components/alicia/PerfilMedicoHeader";
+import { TrajetoriaAcademica } from "@/components/alicia/TrajetoriaAcademica";
+import { VerificacoesMedico } from "@/components/alicia/VerificacoesMedico";
 
 interface PageProps {
   params: { estado: string; especialidade: string; medico: string };
@@ -28,20 +31,41 @@ export default async function MedicoPage({ params }: PageProps) {
   }
 
   return (
-    <section className="flex flex-col items-center gap-6 px-6 py-16 text-center sm:px-10">
-      <h1 className="font-display text-3xl font-normal text-ink sm:text-4xl">{medico.nome}</h1>
-      <p className="text-sm uppercase tracking-wide text-gold">
-        {especialidade.nome} · {medico.cidade}
-      </p>
-      <p className="max-w-editorial text-base text-ink-soft">
-        O perfil completo e a trajetória acadêmica serão apresentados na próxima etapa.
-      </p>
-      <Link
-        href={`/alicia/${estado.sigla}/${especialidade.id}`}
-        className="mt-4 inline-flex items-center justify-center border border-gold px-6 py-3 text-sm font-medium tracking-wide text-ink transition-colors duration-300 hover:bg-gold hover:text-paper"
-      >
-        Voltar para a lista
-      </Link>
+    <section className="flex flex-col items-center gap-10 px-6 py-16 sm:px-10">
+      <nav aria-label="Breadcrumb" className="w-full max-w-2xl text-xs text-ink-faint">
+        <span>AliCIA</span> <span aria-hidden="true">/</span> <span>{estado.nome}</span>{" "}
+        <span aria-hidden="true">/</span> <span>{especialidade.nome}</span>{" "}
+        <span aria-hidden="true">/</span> <span className="text-ink-soft">{medico.nome}</span>
+      </nav>
+
+      <div className="w-full max-w-2xl">
+        <Link
+          href={`/alicia/${estado.sigla}/${especialidade.id}`}
+          className="text-sm font-medium text-ink-soft transition-colors duration-300 hover:text-gold"
+        >
+          ← Voltar para a lista
+        </Link>
+      </div>
+
+      <PerfilMedicoHeader medico={medico} especialidadeNome={especialidade.nome} />
+
+      <TrajetoriaAcademica
+        formacoes={medico.formacoes ?? []}
+        experiencias={medico.experiencias ?? []}
+        areasDeAtuacao={medico.areasDeAtuacao ?? []}
+      />
+
+      <VerificacoesMedico verificacoes={medico.verificacoes ?? []} />
+
+      <div className="w-full max-w-2xl border-t border-hairline pt-6 text-sm text-ink-faint">
+        <h2 className="mb-1 text-xs font-medium uppercase tracking-wide text-ink-faint">
+          Sobre este perfil
+        </h2>
+        <p>
+          As informações exibidas são demonstrativas nesta versão do MVP. A AliCIA ainda não
+          apresenta ranking, recomendação ou avaliação comparativa entre médicos.
+        </p>
+      </div>
     </section>
   );
 }
