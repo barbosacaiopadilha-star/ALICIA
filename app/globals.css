@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-paper text-ink antialiased;
+    font-feature-settings: "liga" 1, "kern" 1;
+  }
+
+  ::selection {
+    @apply bg-gold-soft text-ink;
+  }
+
+  :focus-visible {
+    outline: 2px solid theme("colors.gold");
+    outline-offset: 3px;
+  }
+}
+
+@layer utilities {
+  .section {
+    @apply relative flex min-h-screen w-full flex-col items-center justify-center px-6 py-24 sm:px-10;
+  }
+
+  .eyebrow {
+    @apply text-xs tracking-[0.28em] text-gold uppercase font-body;
+  }
+
+  .rule {
+    @apply h-px w-12 bg-hairline;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
