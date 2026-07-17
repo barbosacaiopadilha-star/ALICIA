@@ -65,6 +65,12 @@ export default async function MedicoPage({ params }: PageProps) {
           As informações exibidas são demonstrativas nesta versão do MVP. A AliCIA ainda não
           apresenta ranking, recomendação ou avaliação comparativa entre médicos.
         </p>
+        <Link
+          href="/alicia/metodologia"
+          className="mt-2 inline-block text-sm font-medium text-ink-soft underline decoration-hairline underline-offset-4 transition-colors duration-300 hover:text-gold hover:decoration-gold"
+        >
+          Entenda como a AliCIA analisa a formação
+        </Link>
       </div>
     </section>
   );
