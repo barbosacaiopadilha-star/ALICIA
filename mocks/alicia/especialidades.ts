@@ -29,7 +29,7 @@ export const quantidadePorEstado: Record<string, Record<string, number>> = {
     ginecologia: 18,
     pediatria: 27,
     neurologia: 9,
-    neurocirurgia: 4,
+    neurocirurgia: 0,
     oftalmologia: 15,
     urologia: 7,
     oncologia: 6,
