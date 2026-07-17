@@ -1,3 +1,5 @@
+import { medicos } from "@/mocks/alicia/medicos";
+
 interface EspecialidadeBase {
   id: string;
   nome: string;
@@ -19,35 +21,17 @@ export const especialidadesBase: EspecialidadeBase[] = [
   { id: "endocrinologia", nome: "Endocrinologia", icone: "flask-conical" },
 ];
 
-// Quantidade de médicos por estado. Estados fora deste mapa (ou
-// especialidades ausentes dentro dele) resultam em quantidade 0 ("Em breve").
-export const quantidadePorEstado: Record<string, Record<string, number>> = {
-  SP: {
-    ortopedia: 34,
-    cardiologia: 21,
-    dermatologia: 12,
-    ginecologia: 18,
-    pediatria: 27,
-    neurologia: 9,
-    neurocirurgia: 0,
-    oftalmologia: 15,
-    urologia: 7,
-    oncologia: 6,
-    psiquiatria: 11,
-    endocrinologia: 8,
+// Quantidade de médicos por estado, derivada diretamente do mock real de
+// médicos (mocks/alicia/medicos.ts) — não são mais números fixos digitados
+// à parte. Combinações sem nenhum médico simplesmente não aparecem aqui e
+// resultam em quantidade 0 ("Em breve") no service.
+export const quantidadePorEstado: Record<string, Record<string, number>> = medicos.reduce(
+  (acc, medico) => {
+    const estado = medico.estadoSigla;
+    const especialidade = medico.especialidadeId;
+    acc[estado] = acc[estado] ?? {};
+    acc[estado][especialidade] = (acc[estado][especialidade] ?? 0) + 1;
+    return acc;
   },
-  RJ: {
-    ortopedia: 19,
-    cardiologia: 14,
-    dermatologia: 0,
-    ginecologia: 10,
-    pediatria: 16,
-    neurologia: 5,
-    neurocirurgia: 0,
-    oftalmologia: 9,
-    urologia: 0,
-    oncologia: 3,
-    psiquiatria: 6,
-    endocrinologia: 4,
-  },
-};
+  {} as Record<string, Record<string, number>>
+);

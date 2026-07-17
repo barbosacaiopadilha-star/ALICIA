@@ -17,5 +17,6 @@ export async function getEspecialidadePorId(
   idEspecialidade: string
 ): Promise<Especialidade | null> {
   const todas = await getEspecialidadesPorEstado(siglaEstado);
-  return todas.find((especialidade) => especialidade.id === idEspecialidade) ?? null;
+  const idNormalizado = idEspecialidade.toLowerCase();
+  return todas.find((especialidade) => especialidade.id === idNormalizado) ?? null;
 }
