@@ -28,3 +28,10 @@ export type { CreateVerificationInput } from "./CreateVerification";
 
 export { GetPublishedKnowledgeClaimsByProfessional } from "./GetPublishedKnowledgeClaimsByProfessional";
 export type { GetPublishedKnowledgeClaimsByProfessionalInput } from "./GetPublishedKnowledgeClaimsByProfessional";
+
+export { GetPublishedKnowledgeTraceByProfessional } from "./GetPublishedKnowledgeTraceByProfessional";
+export type {
+  GetPublishedKnowledgeTraceByProfessionalInput,
+  PublishedKnowledgeEvidenceTrace,
+  PublishedKnowledgeClaimTrace,
+} from "./GetPublishedKnowledgeTraceByProfessional";
