@@ -16,3 +16,6 @@ export type {
   KnowledgeClaimEvidenceTrace,
   KnowledgeClaimTrace,
 } from "./GetKnowledgeClaimTrace";
+
+export { CreateSource } from "./CreateSource";
+export type { CreateSourceInput } from "./CreateSource";
