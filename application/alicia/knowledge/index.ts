@@ -9,3 +9,10 @@ export type { AttachVerificationToKnowledgeClaimInput } from "./AttachVerificati
 
 export { ChangeKnowledgeClaimEditorialStatus } from "./ChangeKnowledgeClaimEditorialStatus";
 export type { ChangeKnowledgeClaimEditorialStatusInput } from "./ChangeKnowledgeClaimEditorialStatus";
+
+export { GetKnowledgeClaimTrace } from "./GetKnowledgeClaimTrace";
+export type {
+  GetKnowledgeClaimTraceInput,
+  KnowledgeClaimEvidenceTrace,
+  KnowledgeClaimTrace,
+} from "./GetKnowledgeClaimTrace";
