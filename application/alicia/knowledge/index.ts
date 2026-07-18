@@ -25,3 +25,6 @@ export type { CreateEvidenceInput } from "./CreateEvidence";
 
 export { CreateVerification } from "./CreateVerification";
 export type { CreateVerificationInput } from "./CreateVerification";
+
+export { GetPublishedKnowledgeClaimsByProfessional } from "./GetPublishedKnowledgeClaimsByProfessional";
+export type { GetPublishedKnowledgeClaimsByProfessionalInput } from "./GetPublishedKnowledgeClaimsByProfessional";
