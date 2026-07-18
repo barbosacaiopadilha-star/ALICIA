@@ -1,6 +1,17 @@
-export type RegistrationStatus = "active" | "inactive" | "suspended";
+export type RegistrationStatus =
+  | "active"
+  | "inactive"
+  | "suspended"
+  | "cancelled"
+  | "unknown";
 
-const VALID_STATUSES: RegistrationStatus[] = ["active", "inactive", "suspended"];
+const VALID_STATUSES: RegistrationStatus[] = [
+  "active",
+  "inactive",
+  "suspended",
+  "cancelled",
+  "unknown",
+];
 
 export interface RegistrationProps {
   council: string;
