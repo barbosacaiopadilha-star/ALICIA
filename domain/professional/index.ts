@@ -36,3 +36,15 @@ export type { ConditionProps, ConditionType } from "./Condition";
 
 export { Capability } from "./Capability";
 export type { CapabilityProps, CapabilityType, CapabilityLevel } from "./Capability";
+
+export { Source } from "./Source";
+export type { SourceProps, SourceType } from "./Source";
+
+export { Evidence } from "./Evidence";
+export type { EvidenceProps, EvidenceType } from "./Evidence";
+
+export { Verification } from "./Verification";
+export type { VerificationProps, VerificationResult, VerificationMethod } from "./Verification";
+
+export { EditorialStatus } from "./EditorialStatus";
+export type { EditorialStatusProps, EditorialStatusValue } from "./EditorialStatus";
