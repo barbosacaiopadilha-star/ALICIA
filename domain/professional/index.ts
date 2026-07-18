@@ -18,3 +18,15 @@ export type { EducationProps, EducationType } from "./Education";
 
 export { Experience } from "./Experience";
 export type { ExperienceProps, ExperienceType } from "./Experience";
+
+export { Institution } from "./Institution";
+export type { InstitutionProps, InstitutionType } from "./Institution";
+
+export { PracticeLocation } from "./PracticeLocation";
+export type { PracticeLocationProps } from "./PracticeLocation";
+
+export { ConsultationMode } from "./ConsultationMode";
+export type { ConsultationModeProps, ConsultationModeValue } from "./ConsultationMode";
+
+export { Language } from "./Language";
+export type { LanguageProps, LanguageProficiency } from "./Language";
