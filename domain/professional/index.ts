@@ -30,3 +30,9 @@ export type { ConsultationModeProps, ConsultationModeValue } from "./Consultatio
 
 export { Language } from "./Language";
 export type { LanguageProps, LanguageProficiency } from "./Language";
+
+export { Condition } from "./Condition";
+export type { ConditionProps, ConditionType } from "./Condition";
+
+export { Capability } from "./Capability";
+export type { CapabilityProps, CapabilityType, CapabilityLevel } from "./Capability";
