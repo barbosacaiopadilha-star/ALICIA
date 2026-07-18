@@ -48,3 +48,5 @@ export type { VerificationProps, VerificationResult, VerificationMethod } from "
 
 export { EditorialStatus } from "./EditorialStatus";
 export type { EditorialStatusProps, EditorialStatusValue } from "./EditorialStatus";
+
+export type { ProfessionalRepository, SpecialtyRepository, ConditionRepository } from "./repositories";
