@@ -22,3 +22,6 @@ export type { CreateSourceInput } from "./CreateSource";
 
 export { CreateEvidence } from "./CreateEvidence";
 export type { CreateEvidenceInput } from "./CreateEvidence";
+
+export { CreateVerification } from "./CreateVerification";
+export type { CreateVerificationInput } from "./CreateVerification";
