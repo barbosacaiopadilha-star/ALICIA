@@ -122,13 +122,18 @@ export class KnowledgeClaim {
       throw new Error("KnowledgeClaim: updatedAt não pode anteceder createdAt.");
     }
 
-    const evidenceIds = Array.from(
-      new Set(
-        (props.evidenceIds ?? [])
-          .map((evidenceId) => evidenceId.trim())
-          .filter((evidenceId) => evidenceId.length > 0)
-      )
-    );
+    const seenEvidenceIds = new Set<string>();
+    const evidenceIds: string[] = [];
+    for (const rawEvidenceId of props.evidenceIds ?? []) {
+      const evidenceId = rawEvidenceId.trim();
+      if (!evidenceId) {
+        throw new Error("KnowledgeClaim evidenceId cannot be empty.");
+      }
+      if (!seenEvidenceIds.has(evidenceId)) {
+        seenEvidenceIds.add(evidenceId);
+        evidenceIds.push(evidenceId);
+      }
+    }
 
     if (props.editorialStatus.value === "published" && evidenceIds.length === 0) {
       throw new Error(
