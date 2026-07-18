@@ -19,3 +19,6 @@ export type {
 
 export { CreateSource } from "./CreateSource";
 export type { CreateSourceInput } from "./CreateSource";
+
+export { CreateEvidence } from "./CreateEvidence";
+export type { CreateEvidenceInput } from "./CreateEvidence";
