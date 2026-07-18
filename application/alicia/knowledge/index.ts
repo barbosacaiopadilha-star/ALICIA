@@ -6,3 +6,6 @@ export type { AddEvidenceToKnowledgeClaimInput } from "./AddEvidenceToKnowledgeC
 
 export { AttachVerificationToKnowledgeClaim } from "./AttachVerificationToKnowledgeClaim";
 export type { AttachVerificationToKnowledgeClaimInput } from "./AttachVerificationToKnowledgeClaim";
+
+export { ChangeKnowledgeClaimEditorialStatus } from "./ChangeKnowledgeClaimEditorialStatus";
+export type { ChangeKnowledgeClaimEditorialStatusInput } from "./ChangeKnowledgeClaimEditorialStatus";
