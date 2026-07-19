@@ -26,18 +26,14 @@ export class MockProfessionalCatalogQuery implements ProfessionalCatalogQuery {
       return null;
     }
 
-    // ProfessionalCatalogSource não expõe (e esta tarefa não autoriza criar)
-    // um método de busca por slug — o único caminho real disponível é
-    // findAll() seguido de filtro em memória.
-    const items = await this.source.findAll();
-    const found = items.find((item) => item.slug === normalizedSlug);
-    if (!found) {
+    const item = await this.source.findBySlug(normalizedSlug);
+    if (!item) {
       return null;
     }
 
     return this.projectionBuilder.execute({
-      professional: found.professional,
-      slug: found.slug,
+      professional: item.professional,
+      slug: item.slug,
     });
   }
 }
