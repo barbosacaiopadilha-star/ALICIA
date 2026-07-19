@@ -5,6 +5,11 @@ export type {
   ProfessionalCatalogLocation,
 } from "./ProfessionalCatalogProjection";
 
+export type {
+  ProfessionalCatalogSource,
+  ProfessionalCatalogSourceItem,
+} from "./ProfessionalCatalogSource";
+
 export { BuildProfessionalCatalogProjection } from "./BuildProfessionalCatalogProjection";
 export type { BuildProfessionalCatalogProjectionInput } from "./BuildProfessionalCatalogProjection";
 
