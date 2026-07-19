@@ -2,6 +2,7 @@ import { Identity } from "./Identity";
 import { Registration } from "./Registration";
 import { Specialty } from "./Specialty";
 import { Education } from "./Education";
+import { PracticeLocation } from "./PracticeLocation";
 
 export interface ProfessionalProps {
   id: string;
@@ -9,6 +10,7 @@ export interface ProfessionalProps {
   registrations?: Registration[];
   specialties?: Specialty[];
   education?: Education[];
+  practiceLocations?: PracticeLocation[];
 }
 
 export class Professional {
@@ -17,19 +19,22 @@ export class Professional {
   private readonly _registrations: ReadonlyArray<Registration>;
   private readonly _specialties: ReadonlyArray<Specialty>;
   private readonly _education: ReadonlyArray<Education>;
+  private readonly _practiceLocations: ReadonlyArray<PracticeLocation>;
 
   private constructor(
     id: string,
     identity: Identity,
     registrations: Registration[],
     specialties: Specialty[],
-    education: Education[]
+    education: Education[],
+    practiceLocations: PracticeLocation[]
   ) {
     this.id = id;
     this.identity = identity;
     this._registrations = Object.freeze(registrations);
     this._specialties = Object.freeze(specialties);
     this._education = Object.freeze(education);
+    this._practiceLocations = Object.freeze(practiceLocations);
   }
 
   static create(props: ProfessionalProps): Professional {
@@ -54,8 +59,16 @@ export class Professional {
 
     const specialties = [...(props.specialties ?? [])];
     const education = [...(props.education ?? [])];
+    const practiceLocations = [...(props.practiceLocations ?? [])];
 
-    return new Professional(id, props.identity, registrations, specialties, education);
+    return new Professional(
+      id,
+      props.identity,
+      registrations,
+      specialties,
+      education,
+      practiceLocations
+    );
   }
 
   get registrations(): ReadonlyArray<Registration> {
@@ -68,5 +81,9 @@ export class Professional {
 
   get education(): ReadonlyArray<Education> {
     return this._education;
+  }
+
+  get practiceLocations(): ReadonlyArray<PracticeLocation> {
+    return this._practiceLocations;
   }
 }
