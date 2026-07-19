@@ -4,3 +4,6 @@ export type {
   ProfessionalCatalogEducation,
   ProfessionalCatalogLocation,
 } from "./ProfessionalCatalogProjection";
+
+export { BuildProfessionalCatalogProjection } from "./BuildProfessionalCatalogProjection";
+export type { BuildProfessionalCatalogProjectionInput } from "./BuildProfessionalCatalogProjection";
