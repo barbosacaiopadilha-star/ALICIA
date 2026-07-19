@@ -10,6 +10,8 @@ export type {
   ProfessionalCatalogSourceItem,
 } from "./ProfessionalCatalogSource";
 
+export type { ProfessionalCatalogQuery } from "./ProfessionalCatalogQuery";
+
 export { BuildProfessionalCatalogProjection } from "./BuildProfessionalCatalogProjection";
 export type { BuildProfessionalCatalogProjectionInput } from "./BuildProfessionalCatalogProjection";
 
