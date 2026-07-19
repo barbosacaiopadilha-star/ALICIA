@@ -23,6 +23,26 @@ export class MockProfessionalCatalogSource implements ProfessionalCatalogSource 
   }
 
   async findAll(): Promise<ReadonlyArray<ProfessionalCatalogSourceItem>> {
-    return [...this.items];
+    return this.items.map((item) => ({
+      professional: item.professional,
+      slug: item.slug,
+    }));
+  }
+
+  async findBySlug(slug: string): Promise<ProfessionalCatalogSourceItem | null> {
+    const normalizedSlug = slug?.trim();
+    if (!normalizedSlug) {
+      return null;
+    }
+
+    const found = this.items.find((item) => item.slug === normalizedSlug);
+    if (!found) {
+      return null;
+    }
+
+    return {
+      professional: found.professional,
+      slug: found.slug,
+    };
   }
 }

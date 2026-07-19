@@ -7,4 +7,5 @@ export interface ProfessionalCatalogSourceItem {
 
 export interface ProfessionalCatalogSource {
   findAll(): Promise<ReadonlyArray<ProfessionalCatalogSourceItem>>;
+  findBySlug(slug: string): Promise<ProfessionalCatalogSourceItem | null>;
 }
