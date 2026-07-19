@@ -5,6 +5,7 @@ import { Professional } from "@/domain/professional/Professional";
 import { Specialty } from "@/domain/professional/Specialty";
 import { Education } from "@/domain/professional/Education";
 import type { EducationType } from "@/domain/professional/Education";
+import { PracticeLocation } from "@/domain/professional/PracticeLocation";
 import { especialidadesBase } from "@/mocks/alicia/especialidades";
 
 /**
@@ -40,6 +41,7 @@ export class LegacyProfessionalMapper {
       identity,
       specialties: this.mapSpecialties(input.especialidadeId),
       education: this.mapEducation(input.formacoes),
+      practiceLocations: this.mapPracticeLocations(input),
     });
   }
 
@@ -71,5 +73,36 @@ export class LegacyProfessionalMapper {
     }
     return education;
   }
+
+  private static mapPracticeLocations(input: Medico): PracticeLocation[] {
+    // cidade e estadoSigla representam exclusivamente a localização de
+    // atuação do médico nesta tarefa (não o estado de registro profissional).
+    if (!input.cidade || !input.estadoSigla) {
+      return [];
+    }
+
+    // ID determinístico e estável: derivado apenas de professionalId,
+    // cidade e UF, sem índice de array, UUID ou timestamp.
+    const id = `${input.id}-practice-location-${this.slugify(input.cidade)}-${input.estadoSigla.toLowerCase()}`;
+
+    return [
+      PracticeLocation.create({
+        id,
+        name: input.instituicaoPrincipal,
+        city: input.cidade,
+        state: input.estadoSigla,
+      }),
+    ];
+  }
+
+  private static slugify(value: string): string {
+    return value
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-+|-+$)/g, "");
+  }
 }
+
 
