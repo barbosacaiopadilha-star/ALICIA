@@ -4,6 +4,7 @@ import { Specialty } from "./Specialty";
 import { Education } from "./Education";
 import { PracticeLocation } from "./PracticeLocation";
 import { Experience } from "./Experience";
+import type { Condition } from "./Condition";
 
 export interface ProfessionalProps {
   id: string;
@@ -13,6 +14,7 @@ export interface ProfessionalProps {
   education?: Education[];
   practiceLocations?: PracticeLocation[];
   experience?: Experience[];
+  readonly conditions?: ReadonlyArray<Condition>;
 }
 
 export class Professional {
@@ -23,6 +25,7 @@ export class Professional {
   private readonly _education: ReadonlyArray<Education>;
   private readonly _practiceLocations: ReadonlyArray<PracticeLocation>;
   private readonly _experience: ReadonlyArray<Experience>;
+  private readonly _conditions: ReadonlyArray<Condition>;
 
   private constructor(
     id: string,
@@ -31,7 +34,8 @@ export class Professional {
     specialties: Specialty[],
     education: Education[],
     practiceLocations: PracticeLocation[],
-    experience: Experience[]
+    experience: Experience[],
+    conditions: Condition[]
   ) {
     this.id = id;
     this.identity = identity;
@@ -40,6 +44,7 @@ export class Professional {
     this._education = Object.freeze(education);
     this._practiceLocations = Object.freeze(practiceLocations);
     this._experience = Object.freeze(experience);
+    this._conditions = Object.freeze(conditions);
   }
 
   static create(props: ProfessionalProps): Professional {
@@ -66,6 +71,7 @@ export class Professional {
     const education = [...(props.education ?? [])];
     const practiceLocations = [...(props.practiceLocations ?? [])];
     const experience = [...(props.experience ?? [])];
+    const conditions = [...(props.conditions ?? [])];
 
     return new Professional(
       id,
@@ -74,7 +80,8 @@ export class Professional {
       specialties,
       education,
       practiceLocations,
-      experience
+      experience,
+      conditions
     );
   }
 
@@ -96,5 +103,9 @@ export class Professional {
 
   get experience(): ReadonlyArray<Experience> {
     return this._experience;
+  }
+
+  get conditions(): ReadonlyArray<Condition> {
+    return this._conditions;
   }
 }
