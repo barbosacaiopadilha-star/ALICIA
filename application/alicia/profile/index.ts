@@ -5,10 +5,8 @@ export type {
   ProfessionalProfileLocation,
 } from "./ProfessionalProfileProjection";
 
-export type {
-  ProfessionalProfileSource,
-  ProfessionalProfileSourceItem,
-} from "./ProfessionalProfileSource";
-
 export { BuildProfessionalProfileProjection } from "./BuildProfessionalProfileProjection";
 export type { BuildProfessionalProfileProjectionInput } from "./BuildProfessionalProfileProjection";
+
+export { GetProfessionalProfileBySlug } from "./GetProfessionalProfileBySlug";
+export type { GetProfessionalProfileBySlugInput } from "./GetProfessionalProfileBySlug";
