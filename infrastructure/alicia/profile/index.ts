@@ -1,0 +1,1 @@
+export { createGetProfessionalProfileBySlug } from "./createGetProfessionalProfileBySlug";
