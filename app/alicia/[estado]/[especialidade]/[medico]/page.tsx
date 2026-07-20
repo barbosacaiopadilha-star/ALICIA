@@ -15,12 +15,15 @@ interface PageProps {
 
 // View de apresentação interna a esta página — não pertence ao domínio,
 // não é exportada. Usada apenas para compor a lista pública de "áreas de
-// atuação" a partir de fontes já migradas (specialties/conditions/
-// capabilities) e do restante ainda exclusivamente legado.
+// atuação" a partir de fontes já migradas (conditions/capabilities) e do
+// restante ainda exclusivamente legado. Specialty identifica a
+// especialidade principal do profissional e é apresentada apenas pelos
+// pontos já existentes da interface — não compõe esta lista (ver
+// docs/architecture/SPECIALTY_DUPLICATION_REVIEW.md).
 interface AreaDeAtuacaoView {
   id: string;
   label: string;
-  source: "specialty" | "condition" | "capability" | "legacy";
+  source: "condition" | "capability" | "legacy";
 }
 
 // Itens de areasDeAtuacao já aprovados e migrados para o novo domínio
@@ -100,11 +103,6 @@ export default async function MedicoPage({ params }: PageProps) {
   const especialidadeNome = professionalProfile.specialties[0]?.name ?? especialidade.nome;
 
   const areasDeAtuacaoView: AreaDeAtuacaoView[] = [
-    ...professionalProfile.specialties.map((specialty) => ({
-      id: specialty.id,
-      label: specialty.name,
-      source: "specialty" as const,
-    })),
     ...professionalProfile.conditions.map((condition) => ({
       id: condition.id,
       label: condition.name,
