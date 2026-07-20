@@ -1,9 +1,9 @@
-import { ExperienciaProfissional, FormacaoAcademica } from "@/types/alicia/trajetoria-medica";
-import { FormacaoItem } from "@/components/alicia/FormacaoItem";
+import { ExperienciaProfissional } from "@/types/alicia/trajetoria-medica";
+import { FormacaoItem, type FormacaoView } from "@/components/alicia/FormacaoItem";
 import { formatarPeriodo } from "@/lib/alicia/texto";
 
 interface TrajetoriaAcademicaProps {
-  formacoes: FormacaoAcademica[];
+  formacoes: FormacaoView[];
   experiencias: ExperienciaProfissional[];
   areasDeAtuacao: string[];
 }

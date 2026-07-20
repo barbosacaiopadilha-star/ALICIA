@@ -1,15 +1,42 @@
-import { FormacaoAcademica } from "@/types/alicia/trajetoria-medica";
 import { formatarPeriodo } from "@/lib/alicia/texto";
 
-const rotulosTipo: Record<FormacaoAcademica["tipo"], string> = {
-  graduacao: "Graduação",
-  residencia: "Residência médica",
+export type FormacaoViewTipo =
+  | "undergraduate"
+  | "residency"
+  | "fellowship"
+  | "specialization"
+  | "masters"
+  | "doctorate"
+  | "postdoctorate"
+  | "other";
+
+export interface FormacaoView {
+  id: string;
+  tipo: FormacaoViewTipo;
+  titulo: string;
+  instituicao: string;
+  anoInicio?: number;
+  anoConclusao?: number;
+  cidade?: string;
+  estado?: string;
+  verificado: boolean;
+}
+
+const rotulosTipo: Record<FormacaoViewTipo, string> = {
+  undergraduate: "Graduação",
+  residency: "Residência médica",
   fellowship: "Fellowship",
-  especializacao: "Especialização",
-  curso: "Curso complementar",
+  specialization: "Especialização",
+  masters: "Mestrado",
+  doctorate: "Doutorado",
+  postdoctorate: "Pós-doutorado",
+  // "curso" (legado) sempre correspondeu a "other" no mapeamento do
+  // domínio (ver LegacyProfessionalMapper); mantém o mesmo rótulo
+  // visual já usado hoje.
+  other: "Curso complementar",
 };
 
-export function FormacaoItem({ formacao }: { formacao: FormacaoAcademica }) {
+export function FormacaoItem({ formacao }: { formacao: FormacaoView }) {
   const periodo = formatarPeriodo(formacao.anoInicio, formacao.anoConclusao);
   const local = [formacao.cidade, formacao.estado].filter(Boolean).join(", ");
 
