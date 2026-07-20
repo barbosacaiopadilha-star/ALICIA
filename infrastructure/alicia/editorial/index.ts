@@ -1,0 +1,1 @@
+export { InMemoryProfessionalPublicBiographyRepository } from "./InMemoryProfessionalPublicBiographyRepository";
