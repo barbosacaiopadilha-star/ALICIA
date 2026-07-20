@@ -13,6 +13,28 @@ interface PageProps {
   params: { estado: string; especialidade: string; medico: string };
 }
 
+// View de apresentação interna a esta página — não pertence ao domínio,
+// não é exportada. Usada apenas para compor a lista pública de "áreas de
+// atuação" a partir de fontes já migradas (specialties/conditions/
+// capabilities) e do restante ainda exclusivamente legado.
+interface AreaDeAtuacaoView {
+  id: string;
+  label: string;
+  source: "specialty" | "condition" | "capability" | "legacy";
+}
+
+// Itens de areasDeAtuacao já aprovados e migrados para o novo domínio
+// (docs/architecture/AREAS_DE_ATUACAO_DECOMPOSITION_REVIEW.md,
+// CONDITION_CLASSIFICATION_REVIEW.md, CAPABILITY_CLASSIFICATION_REVIEW.md,
+// SPECIALTY_DUPLICATION_REVIEW.md). Lista fechada e explícita — nenhuma
+// remoção automática por normalização, lowercase ou similaridade textual.
+const REMOVED_LEGACY_ITEMS = new Set([
+  "Joelho",
+  "Arritmias",
+  "Angioplastia",
+  "Ortopedia geral",
+]);
+
 export default async function MedicoPage({ params }: PageProps) {
   const estado = await getEstadoPorSigla(params.estado);
 
@@ -77,6 +99,31 @@ export default async function MedicoPage({ params }: PageProps) {
 
   const especialidadeNome = professionalProfile.specialties[0]?.name ?? especialidade.nome;
 
+  const areasDeAtuacaoView: AreaDeAtuacaoView[] = [
+    ...professionalProfile.specialties.map((specialty) => ({
+      id: specialty.id,
+      label: specialty.name,
+      source: "specialty" as const,
+    })),
+    ...professionalProfile.conditions.map((condition) => ({
+      id: condition.id,
+      label: condition.name,
+      source: "condition" as const,
+    })),
+    ...professionalProfile.capabilities.map((capability) => ({
+      id: capability.id,
+      label: capability.name,
+      source: "capability" as const,
+    })),
+    ...legacyProfileBlocks.areasDeAtuacao
+      .filter((area) => !REMOVED_LEGACY_ITEMS.has(area))
+      .map((area) => ({
+        id: area,
+        label: area,
+        source: "legacy" as const,
+      })),
+  ];
+
   return (
     <section className="flex flex-col items-center gap-10 px-6 py-16 sm:px-10">
       <nav aria-label="Breadcrumb" className="w-full max-w-2xl text-xs text-ink-faint">
@@ -108,7 +155,7 @@ export default async function MedicoPage({ params }: PageProps) {
       <TrajetoriaAcademica
         formacoes={formacoesView}
         experience={professionalProfile.experience}
-        areasDeAtuacao={legacyProfileBlocks.areasDeAtuacao}
+        areasDeAtuacao={areasDeAtuacaoView.map((item) => item.label)}
       />
 
       <VerificacoesMedico verificacoes={legacyProfileBlocks.verificacoes} />
