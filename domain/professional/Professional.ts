@@ -5,6 +5,7 @@ import { Education } from "./Education";
 import { PracticeLocation } from "./PracticeLocation";
 import { Experience } from "./Experience";
 import type { Condition } from "./Condition";
+import type { Capability } from "./Capability";
 
 export interface ProfessionalProps {
   id: string;
@@ -15,6 +16,7 @@ export interface ProfessionalProps {
   practiceLocations?: PracticeLocation[];
   experience?: Experience[];
   readonly conditions?: ReadonlyArray<Condition>;
+  readonly capabilities?: ReadonlyArray<Capability>;
 }
 
 export class Professional {
@@ -26,6 +28,7 @@ export class Professional {
   private readonly _practiceLocations: ReadonlyArray<PracticeLocation>;
   private readonly _experience: ReadonlyArray<Experience>;
   private readonly _conditions: ReadonlyArray<Condition>;
+  private readonly _capabilities: ReadonlyArray<Capability>;
 
   private constructor(
     id: string,
@@ -35,7 +38,8 @@ export class Professional {
     education: Education[],
     practiceLocations: PracticeLocation[],
     experience: Experience[],
-    conditions: Condition[]
+    conditions: Condition[],
+    capabilities: Capability[]
   ) {
     this.id = id;
     this.identity = identity;
@@ -45,6 +49,7 @@ export class Professional {
     this._practiceLocations = Object.freeze(practiceLocations);
     this._experience = Object.freeze(experience);
     this._conditions = Object.freeze(conditions);
+    this._capabilities = Object.freeze(capabilities);
   }
 
   static create(props: ProfessionalProps): Professional {
@@ -72,6 +77,7 @@ export class Professional {
     const practiceLocations = [...(props.practiceLocations ?? [])];
     const experience = [...(props.experience ?? [])];
     const conditions = [...(props.conditions ?? [])];
+    const capabilities = [...(props.capabilities ?? [])];
 
     return new Professional(
       id,
@@ -81,7 +87,8 @@ export class Professional {
       education,
       practiceLocations,
       experience,
-      conditions
+      conditions,
+      capabilities
     );
   }
 
@@ -107,5 +114,9 @@ export class Professional {
 
   get conditions(): ReadonlyArray<Condition> {
     return this._conditions;
+  }
+
+  get capabilities(): ReadonlyArray<Capability> {
+    return this._capabilities;
   }
 }
