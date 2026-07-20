@@ -1,5 +1,6 @@
 import type { EducationType } from "@/domain/professional/Education";
 import type { ExperienceType } from "@/domain/professional/Experience";
+import type { ConditionType } from "@/domain/professional/Condition";
 
 export interface ProfessionalProfileSpecialty {
   readonly id: string;
@@ -26,6 +27,12 @@ export interface ProfessionalProfileExperience {
   readonly description?: string;
 }
 
+export interface ProfessionalProfileCondition {
+  readonly id: string;
+  readonly name: string;
+  readonly type: ConditionType;
+}
+
 export interface ProfessionalProfileLocation {
   readonly id: string;
   readonly name: string;
@@ -44,6 +51,7 @@ export interface ProfessionalProfileProjection {
   readonly specialties: ReadonlyArray<ProfessionalProfileSpecialty>;
   readonly education: ReadonlyArray<ProfessionalProfileEducation>;
   readonly experience: ReadonlyArray<ProfessionalProfileExperience>;
+  readonly conditions: ReadonlyArray<ProfessionalProfileCondition>;
   readonly practiceLocations: ReadonlyArray<ProfessionalProfileLocation>;
   readonly primaryLocation?: ProfessionalProfileLocation;
 }

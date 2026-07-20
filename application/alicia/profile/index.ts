@@ -3,6 +3,7 @@ export type {
   ProfessionalProfileSpecialty,
   ProfessionalProfileEducation,
   ProfessionalProfileExperience,
+  ProfessionalProfileCondition,
   ProfessionalProfileLocation,
 } from "./ProfessionalProfileProjection";
 

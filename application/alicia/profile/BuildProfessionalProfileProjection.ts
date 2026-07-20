@@ -1,5 +1,6 @@
 import type { Professional } from "@/domain/professional/Professional";
 import type {
+  ProfessionalProfileCondition,
   ProfessionalProfileEducation,
   ProfessionalProfileExperience,
   ProfessionalProfileLocation,
@@ -31,6 +32,7 @@ export class BuildProfessionalProfileProjection {
       specialties: this.mapSpecialties(professional),
       education: this.mapEducation(professional),
       experience: this.mapExperience(professional),
+      conditions: this.mapConditions(professional),
       practiceLocations,
       primaryLocation: practiceLocations[0],
     };
@@ -64,6 +66,14 @@ export class BuildProfessionalProfileProjection {
       endYear: experience.endYear,
       current: experience.current,
       description: experience.description,
+    }));
+  }
+
+  private mapConditions(professional: Professional): ProfessionalProfileCondition[] {
+    return professional.conditions.map((condition) => ({
+      id: condition.id,
+      name: condition.name,
+      type: condition.type,
     }));
   }
 
