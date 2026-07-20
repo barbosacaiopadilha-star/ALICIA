@@ -52,7 +52,6 @@ export default async function MedicoPage({ params }: PageProps) {
   const legacyProfileBlocks = {
     verificado: legacyProfessional.verificado,
     bioCurta: legacyProfessional.bioCurta,
-    experiencias: legacyProfessional.experiencias ?? [],
     areasDeAtuacao: legacyProfessional.areasDeAtuacao ?? [],
     verificacoes: legacyProfessional.verificacoes ?? [],
   };
@@ -108,7 +107,7 @@ export default async function MedicoPage({ params }: PageProps) {
 
       <TrajetoriaAcademica
         formacoes={formacoesView}
-        experiencias={legacyProfileBlocks.experiencias}
+        experience={professionalProfile.experience}
         areasDeAtuacao={legacyProfileBlocks.areasDeAtuacao}
       />
 

@@ -1,4 +1,5 @@
 import type { EducationType } from "@/domain/professional/Education";
+import type { ExperienceType } from "@/domain/professional/Experience";
 
 export interface ProfessionalProfileSpecialty {
   readonly id: string;
@@ -12,6 +13,17 @@ export interface ProfessionalProfileEducation {
   readonly institutionName: string;
   readonly startYear?: number;
   readonly endYear?: number;
+}
+
+export interface ProfessionalProfileExperience {
+  readonly id: string;
+  readonly type?: ExperienceType;
+  readonly role: string;
+  readonly organizationName: string;
+  readonly startYear?: number;
+  readonly endYear?: number;
+  readonly current?: boolean;
+  readonly description?: string;
 }
 
 export interface ProfessionalProfileLocation {
@@ -31,6 +43,7 @@ export interface ProfessionalProfileProjection {
   readonly photoUrl?: string;
   readonly specialties: ReadonlyArray<ProfessionalProfileSpecialty>;
   readonly education: ReadonlyArray<ProfessionalProfileEducation>;
+  readonly experience: ReadonlyArray<ProfessionalProfileExperience>;
   readonly practiceLocations: ReadonlyArray<ProfessionalProfileLocation>;
   readonly primaryLocation?: ProfessionalProfileLocation;
 }

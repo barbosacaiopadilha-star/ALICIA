@@ -1,6 +1,7 @@
 import type { Professional } from "@/domain/professional/Professional";
 import type {
   ProfessionalProfileEducation,
+  ProfessionalProfileExperience,
   ProfessionalProfileLocation,
   ProfessionalProfileProjection,
   ProfessionalProfileSpecialty,
@@ -29,6 +30,7 @@ export class BuildProfessionalProfileProjection {
       photoUrl: professional.identity.photoUrl,
       specialties: this.mapSpecialties(professional),
       education: this.mapEducation(professional),
+      experience: this.mapExperience(professional),
       practiceLocations,
       primaryLocation: practiceLocations[0],
     };
@@ -49,6 +51,19 @@ export class BuildProfessionalProfileProjection {
       institutionName: education.institutionName,
       startYear: education.startYear,
       endYear: education.endYear,
+    }));
+  }
+
+  private mapExperience(professional: Professional): ProfessionalProfileExperience[] {
+    return professional.experience.map((experience) => ({
+      id: experience.id,
+      type: experience.type,
+      role: experience.role,
+      organizationName: experience.organizationName,
+      startYear: experience.startYear,
+      endYear: experience.endYear,
+      current: experience.current,
+      description: experience.description,
     }));
   }
 

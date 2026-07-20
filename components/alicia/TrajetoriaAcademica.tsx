@@ -1,16 +1,16 @@
-import { ExperienciaProfissional } from "@/types/alicia/trajetoria-medica";
+import type { ProfessionalProfileExperience } from "@/application/alicia/profile/ProfessionalProfileProjection";
 import { FormacaoItem, type FormacaoView } from "@/components/alicia/FormacaoItem";
 import { formatarPeriodo } from "@/lib/alicia/texto";
 
 interface TrajetoriaAcademicaProps {
   formacoes: FormacaoView[];
-  experiencias: ExperienciaProfissional[];
+  experience: ProfessionalProfileExperience[];
   areasDeAtuacao: string[];
 }
 
 export function TrajetoriaAcademica({
   formacoes,
-  experiencias,
+  experience,
   areasDeAtuacao,
 }: TrajetoriaAcademicaProps) {
   return (
@@ -43,22 +43,17 @@ export function TrajetoriaAcademica({
         <h3 className="text-sm font-medium uppercase tracking-wide text-ink-faint">
           Experiência profissional
         </h3>
-        {experiencias.length > 0 ? (
+        {experience.length > 0 ? (
           <ul className="flex flex-col gap-4">
-            {experiencias.map((experiencia) => {
-              const periodo = formatarPeriodo(
-                experiencia.anoInicio,
-                experiencia.anoConclusao,
-                experiencia.atual
-              );
+            {experience.map((item) => {
+              const periodo = formatarPeriodo(item.startYear, item.endYear, item.current);
               return (
-                <li key={experiencia.id} className="flex flex-col gap-1 border-l-2 border-hairline py-1 pl-4">
-                  <h4 className="font-display text-lg font-normal text-ink">{experiencia.funcao}</h4>
-                  <p className="text-sm text-ink-soft">{experiencia.instituicao}</p>
-                  {experiencia.cidade && <p className="text-sm text-ink-faint">{experiencia.cidade}</p>}
+                <li key={item.id} className="flex flex-col gap-1 border-l-2 border-hairline py-1 pl-4">
+                  <h4 className="font-display text-lg font-normal text-ink">{item.role}</h4>
+                  <p className="text-sm text-ink-soft">{item.organizationName}</p>
                   <p className="text-sm text-ink-faint">
                     {periodo}
-                    {experiencia.atual && " · Atual"}
+                    {item.current && " · Atual"}
                   </p>
                 </li>
               );
