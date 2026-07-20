@@ -7,6 +7,8 @@ import { Education } from "@/domain/professional/Education";
 import type { EducationType } from "@/domain/professional/Education";
 import { PracticeLocation } from "@/domain/professional/PracticeLocation";
 import { Experience } from "@/domain/professional/Experience";
+import { Condition } from "@/domain/professional/Condition";
+import type { ConditionType } from "@/domain/professional/Condition";
 import { especialidadesBase } from "@/mocks/alicia/especialidades";
 
 /**
@@ -30,6 +32,18 @@ const EDUCATION_TYPE_MAP: Record<TipoFormacao, EducationType> = {
   curso: "other",
 };
 
+// Tabela fechada e determinística: somente os itens de areasDeAtuacao já
+// aprovados nas auditorias (docs/architecture/AREAS_DE_ATUACAO_DECOMPOSITION_REVIEW.md
+// e docs/architecture/CONDITION_CLASSIFICATION_REVIEW.md) têm correspondência
+// exata aqui. Correspondência é por igualdade exata de texto — nenhuma
+// palavra-chave, regex, prefixo ou heurística. Qualquer valor ausente desta
+// tabela (ex.: "Trauma esportivo", ambíguo entre injury/care-need) é
+// ignorado por mapConditions, não convertido para "other".
+const CONDITION_TYPE_MAP: Record<string, ConditionType> = {
+  Joelho: "body-region",
+  Arritmias: "disease",
+};
+
 export class LegacyProfessionalMapper {
   static toDomain(input: Medico): Professional {
     const identity = Identity.create({
@@ -44,6 +58,7 @@ export class LegacyProfessionalMapper {
       education: this.mapEducation(input.formacoes),
       practiceLocations: this.mapPracticeLocations(input),
       experience: this.mapExperience(input.experiencias),
+      conditions: this.mapConditions(input.id, input.areasDeAtuacao ?? []),
     });
   }
 
@@ -117,6 +132,33 @@ export class LegacyProfessionalMapper {
       );
     }
     return experience;
+  }
+
+  private static mapConditions(
+    professionalId: string,
+    areasDeAtuacao: ReadonlyArray<string>
+  ): Condition[] {
+    const conditions: Condition[] = [];
+    for (const area of areasDeAtuacao) {
+      const type = CONDITION_TYPE_MAP[area];
+      if (!type) {
+        // Item ainda não aprovado para migração (ex.: "Trauma esportivo",
+        // "Ortopedia geral", "Angioplastia", "Prevenção cardiovascular") —
+        // permanece exclusivamente no bridge legado, sem virar Condition
+        // nem "other".
+        continue;
+      }
+
+      const id = `${professionalId}-condition-${this.slugify(area)}`;
+      conditions.push(
+        Condition.create({
+          id,
+          name: area,
+          type,
+        })
+      );
+    }
+    return conditions;
   }
 
   private static slugify(value: string): string {
