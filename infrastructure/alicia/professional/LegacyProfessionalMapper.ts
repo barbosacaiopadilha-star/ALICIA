@@ -6,6 +6,7 @@ import { Specialty } from "@/domain/professional/Specialty";
 import { Education } from "@/domain/professional/Education";
 import type { EducationType } from "@/domain/professional/Education";
 import { PracticeLocation } from "@/domain/professional/PracticeLocation";
+import { Experience } from "@/domain/professional/Experience";
 import { especialidadesBase } from "@/mocks/alicia/especialidades";
 
 /**
@@ -42,6 +43,7 @@ export class LegacyProfessionalMapper {
       specialties: this.mapSpecialties(input.especialidadeId),
       education: this.mapEducation(input.formacoes),
       practiceLocations: this.mapPracticeLocations(input),
+      experience: this.mapExperience(input.experiencias),
     });
   }
 
@@ -93,6 +95,28 @@ export class LegacyProfessionalMapper {
         state: input.estadoSigla,
       }),
     ];
+  }
+
+  private static mapExperience(experiencias: Medico["experiencias"]): Experience[] {
+    const experience: Experience[] = [];
+    for (const experiencia of experiencias ?? []) {
+      // "type" não possui nenhuma correspondência real no legado (não há
+      // campo equivalente em ExperienciaProfissional) — permanece
+      // deliberadamente ausente, nunca inferido a partir de "funcao".
+      // "cidade" também não é encaminhada: Experience não possui campo de
+      // local, mesma política já adotada para Education.
+      experience.push(
+        Experience.create({
+          id: experiencia.id,
+          role: experiencia.funcao,
+          organizationName: experiencia.instituicao,
+          startYear: experiencia.anoInicio,
+          endYear: experiencia.anoConclusao,
+          current: experiencia.atual,
+        })
+      );
+    }
+    return experience;
   }
 
   private static slugify(value: string): string {

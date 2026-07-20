@@ -3,6 +3,7 @@ import { Registration } from "./Registration";
 import { Specialty } from "./Specialty";
 import { Education } from "./Education";
 import { PracticeLocation } from "./PracticeLocation";
+import { Experience } from "./Experience";
 
 export interface ProfessionalProps {
   id: string;
@@ -11,6 +12,7 @@ export interface ProfessionalProps {
   specialties?: Specialty[];
   education?: Education[];
   practiceLocations?: PracticeLocation[];
+  experience?: Experience[];
 }
 
 export class Professional {
@@ -20,6 +22,7 @@ export class Professional {
   private readonly _specialties: ReadonlyArray<Specialty>;
   private readonly _education: ReadonlyArray<Education>;
   private readonly _practiceLocations: ReadonlyArray<PracticeLocation>;
+  private readonly _experience: ReadonlyArray<Experience>;
 
   private constructor(
     id: string,
@@ -27,7 +30,8 @@ export class Professional {
     registrations: Registration[],
     specialties: Specialty[],
     education: Education[],
-    practiceLocations: PracticeLocation[]
+    practiceLocations: PracticeLocation[],
+    experience: Experience[]
   ) {
     this.id = id;
     this.identity = identity;
@@ -35,6 +39,7 @@ export class Professional {
     this._specialties = Object.freeze(specialties);
     this._education = Object.freeze(education);
     this._practiceLocations = Object.freeze(practiceLocations);
+    this._experience = Object.freeze(experience);
   }
 
   static create(props: ProfessionalProps): Professional {
@@ -60,6 +65,7 @@ export class Professional {
     const specialties = [...(props.specialties ?? [])];
     const education = [...(props.education ?? [])];
     const practiceLocations = [...(props.practiceLocations ?? [])];
+    const experience = [...(props.experience ?? [])];
 
     return new Professional(
       id,
@@ -67,7 +73,8 @@ export class Professional {
       registrations,
       specialties,
       education,
-      practiceLocations
+      practiceLocations,
+      experience
     );
   }
 
@@ -85,5 +92,9 @@ export class Professional {
 
   get practiceLocations(): ReadonlyArray<PracticeLocation> {
     return this._practiceLocations;
+  }
+
+  get experience(): ReadonlyArray<Experience> {
+    return this._experience;
   }
 }
