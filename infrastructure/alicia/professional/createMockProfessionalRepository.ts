@@ -1,11 +1,11 @@
-import { listRawProfessionals } from "./professionalDataProvider";
+import { listRawProfessionals } from "./createProfessionalDataProvider";
 import type { ProfessionalRepository } from "@/domain/professional/repositories/ProfessionalRepository";
 import { LegacyProfessionalMapper } from "./LegacyProfessionalMapper";
 import { MockProfessionalRepository } from "./MockProfessionalRepository";
 
 /**
  * Cria um ProfessionalRepository em memória a partir da fronteira
- * única de dados brutos (professionalDataProvider). Não é conectado a
+ * única de dados brutos (createProfessionalDataProvider). Não é conectado a
  * nenhuma UI ou service existente — é apenas um ponto de composição
  * isolado.
  */

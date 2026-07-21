@@ -18,13 +18,11 @@ npm install
 npm run dev
 ```
 
-Outros scripts disponíveis: `npm run build`, `npm run start`, `npm run lint`.
-
-> Não existe script `typecheck` no `package.json`; para checar tipos
-> manualmente, rode `npx tsc --noEmit` (garanta que está usando a versão
-> de TypeScript do projeto, instalada em `node_modules`, e não uma
-> instalação global — versões diferentes podem reportar avisos de
-> configuração que não são erros reais do projeto).
+Outros scripts disponíveis: `npm run build`, `npm run start`,
+`npm run lint`, `npm run typecheck` (`tsc --noEmit`) e `npm test`
+(testes unitários e de integração leve dos módulos puros, via o test
+runner nativo do Node com `--experimental-strip-types` — não exige
+nenhuma dependência adicional além do Node instalado).
 
 ## Rotas existentes
 

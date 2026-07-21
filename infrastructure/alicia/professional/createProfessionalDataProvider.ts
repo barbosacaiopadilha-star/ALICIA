@@ -2,14 +2,13 @@ import type { ProfessionalDataProvider } from "./ProfessionalDataProvider";
 import { MockProfessionalDataProvider } from "./MockProfessionalDataProvider";
 import { FutureProfessionalDataProvider } from "./FutureProfessionalDataProvider";
 import type { RawProfessionalData } from "./RawProfessionalData";
-
-const VALID_PROFESSIONAL_DATA_SOURCES = ["mock", "persistent"] as const;
-type ProfessionalDataSource = (typeof VALID_PROFESSIONAL_DATA_SOURCES)[number];
+import { resolveProfessionalDataSource } from "./resolveProfessionalDataSource";
 
 /**
  * Único ponto de composição do ProfessionalDataProvider ativo,
  * seleção controlada exclusivamente pela variável de ambiente
- * PROFESSIONAL_DATA_SOURCE (lida apenas aqui, nunca pela UI):
+ * PROFESSIONAL_DATA_SOURCE (lida apenas aqui, nunca pela UI), via a
+ * regra pura resolveProfessionalDataSource:
  *
  * - ausente → "mock" (padrão de desenvolvimento);
  * - "mock" → MockProfessionalDataProvider;
@@ -24,15 +23,7 @@ type ProfessionalDataSource = (typeof VALID_PROFESSIONAL_DATA_SOURCES)[number];
  * preferência explícita por ausência de fallback silencioso.
  */
 export function createProfessionalDataProvider(): ProfessionalDataProvider {
-  const rawSource = process.env.PROFESSIONAL_DATA_SOURCE?.trim();
-  const source: ProfessionalDataSource = rawSource ? (rawSource as ProfessionalDataSource) : "mock";
-
-  if (!VALID_PROFESSIONAL_DATA_SOURCES.includes(source)) {
-    throw new Error(
-      `professionalDataProvider: PROFESSIONAL_DATA_SOURCE inválido "${rawSource}". ` +
-        `Valores aceitos: ${VALID_PROFESSIONAL_DATA_SOURCES.map((value) => `"${value}"`).join(", ")}.`
-    );
-  }
+  const source = resolveProfessionalDataSource(process.env.PROFESSIONAL_DATA_SOURCE);
 
   if (source === "persistent") {
     return new FutureProfessionalDataProvider();

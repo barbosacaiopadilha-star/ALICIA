@@ -4,32 +4,12 @@ import { useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { MedicoList } from "@/components/alicia/MedicoList";
 import { MedicoCard, type MedicoView } from "@/components/alicia/MedicoCard";
+import { agruparPorCidade } from "@/components/alicia/agruparPorCidade";
 
 interface CatalogoBuscaProps {
   medicos: MedicoView[];
   especialidadeNome: string;
   cidadesDisponiveis: string[];
-}
-
-/**
- * Agrupamento puramente de apresentação por cidade — não é uma regra
- * de domínio nem de aplicação, apenas uma forma de organizar os
- * mesmos MedicoCard já usados na lista. Não inventa coordenadas: o
- * "mapa" desta versão é uma representação geográfica hierárquica
- * (cidade/estado), a única granularidade real disponível hoje (ver
- * docs/architecture/CATALOG_MAP_V1_REVIEW.md).
- */
-function agruparPorCidade(medicos: MedicoView[]): Array<{ cidade: string; medicos: MedicoView[] }> {
-  const grupos = new Map<string, MedicoView[]>();
-  for (const medico of medicos) {
-    const chave = medico.cidade ?? "Cidade não informada";
-    const grupo = grupos.get(chave) ?? [];
-    grupo.push(medico);
-    grupos.set(chave, grupo);
-  }
-  return Array.from(grupos.entries())
-    .sort(([a], [b]) => a.localeCompare(b, "pt-BR"))
-    .map(([cidade, medicosDaCidade]) => ({ cidade, medicos: medicosDaCidade }));
 }
 
 /**
@@ -169,7 +149,7 @@ export function CatalogoBusca({
           onChange={(event) => atualizarOrdenacao(event.target.value)}
           className="w-full border border-hairline bg-paper px-4 py-2 text-sm text-ink focus:border-gold focus:outline-none"
         >
-          <option value="relevance">Relevância</option>
+          <option value="relevance">Ordem padrão</option>
           <option value="name-asc">Nome (A–Z)</option>
           <option value="name-desc">Nome (Z–A)</option>
         </select>
@@ -198,7 +178,7 @@ export function CatalogoBusca({
               : "border border-hairline px-4 py-2 text-sm font-medium text-ink-soft transition-colors duration-300 hover:border-gold hover:text-gold"
           }
         >
-          Mapa
+          Por cidade
         </button>
       </div>
 

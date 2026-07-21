@@ -1,5 +1,5 @@
 import { Medico } from "@/types/alicia/medico";
-import { listRawProfessionals } from "@/infrastructure/alicia/professional/professionalDataProvider";
+import { listRawProfessionals } from "@/infrastructure/alicia/professional/createProfessionalDataProvider";
 
 export async function getMedicosPorEstadoEEspecialidade(
   siglaEstado: string,

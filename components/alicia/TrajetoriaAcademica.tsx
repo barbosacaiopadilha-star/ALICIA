@@ -4,7 +4,7 @@ import { formatarPeriodo } from "@/lib/alicia/texto";
 
 interface TrajetoriaAcademicaProps {
   formacoes: FormacaoView[];
-  experience: ProfessionalProfileExperience[];
+  experience: ReadonlyArray<ProfessionalProfileExperience>;
   areasDeAtuacao: string[];
 }
 
