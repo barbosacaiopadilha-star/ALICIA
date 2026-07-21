@@ -1,4 +1,8 @@
-import type { ProfessionalCatalogQuery } from "@/application/alicia/catalog/ProfessionalCatalogQuery";
+import type {
+  ProfessionalCatalogQuery,
+  ProfessionalCatalogSearchCriteria,
+} from "@/application/alicia/catalog/ProfessionalCatalogQuery";
+import { matchesProfessionalCatalogSearchCriteria } from "@/application/alicia/catalog/ProfessionalCatalogQuery";
 import type { ProfessionalCatalogSource } from "@/application/alicia/catalog/ProfessionalCatalogSource";
 import type { ProfessionalCatalogProjection } from "@/application/alicia/catalog/ProfessionalCatalogProjection";
 import { BuildProfessionalCatalogProjection } from "@/application/alicia/catalog/BuildProfessionalCatalogProjection";
@@ -9,14 +13,24 @@ export class MockProfessionalCatalogQuery implements ProfessionalCatalogQuery {
     private readonly projectionBuilder: BuildProfessionalCatalogProjection
   ) {}
 
-  async list(): Promise<ReadonlyArray<ProfessionalCatalogProjection>> {
+  async list(
+    criteria?: ProfessionalCatalogSearchCriteria
+  ): Promise<ReadonlyArray<ProfessionalCatalogProjection>> {
     const items = await this.source.findAll();
 
-    return items.map((item) =>
+    const projections = items.map((item) =>
       this.projectionBuilder.execute({
         professional: item.professional,
         slug: item.slug,
       })
+    );
+
+    if (!criteria) {
+      return projections;
+    }
+
+    return projections.filter((projection) =>
+      matchesProfessionalCatalogSearchCriteria(projection, criteria)
     );
   }
 

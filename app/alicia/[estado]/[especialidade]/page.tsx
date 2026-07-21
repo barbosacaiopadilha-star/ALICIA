@@ -4,7 +4,7 @@ import { getEstadoPorSigla } from "@/services/alicia/estados";
 import { getEspecialidadePorId } from "@/services/alicia/especialidades";
 import { getMedicosPorEstadoEEspecialidade } from "@/services/alicia/medicos";
 import { createProfessionalCatalogQuery } from "@/infrastructure/alicia/catalog";
-import { MedicoList } from "@/components/alicia/MedicoList";
+import { CatalogoBusca } from "@/components/alicia/CatalogoBusca";
 import type { MedicoView } from "@/components/alicia/MedicoCard";
 
 interface PageProps {
@@ -25,12 +25,10 @@ export default async function EspecialidadePage({ params }: PageProps) {
   }
 
   const catalogQuery = createProfessionalCatalogQuery();
-  const catalog = await catalogQuery.list();
-  const professionals = catalog.filter(
-    (item) =>
-      item.primaryLocation?.state === estado.sigla &&
-      item.specialties.some((specialty) => specialty.id === especialidade.id)
-  );
+  const professionals = await catalogQuery.list({
+    estado: estado.sigla,
+    especialidade: especialidade.id,
+  });
 
   // Temporary legacy bridge for the two fields not represented in
   // ProfessionalCatalogProjection (formacaoResumo, verificado). See
@@ -91,7 +89,7 @@ export default async function EspecialidadePage({ params }: PageProps) {
           </Link>
         </div>
       ) : (
-        <MedicoList medicos={medicosView} especialidadeNome={especialidade.nome} />
+        <CatalogoBusca medicos={medicosView} especialidadeNome={especialidade.nome} />
       )}
     </section>
   );
