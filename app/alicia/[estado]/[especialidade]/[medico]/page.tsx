@@ -20,18 +20,21 @@ interface PageProps {
 // especialidade principal do profissional e é apresentada apenas pelos
 // pontos já existentes da interface — não compõe esta lista (ver
 // docs/architecture/SPECIALTY_DUPLICATION_REVIEW.md).
+type AreaDeAtuacaoSource = "condition" | "capability" | "legacy";
+
 interface AreaDeAtuacaoView {
-  id: string;
-  label: string;
-  source: "condition" | "capability" | "legacy";
+  readonly id: string;
+  readonly label: string;
+  readonly source: AreaDeAtuacaoSource;
 }
 
-// Itens de areasDeAtuacao já aprovados e migrados para o novo domínio
-// (docs/architecture/AREAS_DE_ATUACAO_DECOMPOSITION_REVIEW.md,
-// CONDITION_CLASSIFICATION_REVIEW.md, CAPABILITY_CLASSIFICATION_REVIEW.md,
-// SPECIALTY_DUPLICATION_REVIEW.md). Lista fechada e explícita — nenhuma
+// Itens de areasDeAtuacao que não devem mais ser lidos do legado: três já
+// migrados para o novo domínio (Joelho, Arritmias, Angioplastia) e um
+// descartado por duplicidade com Specialty (Ortopedia geral — ver
+// docs/architecture/SPECIALTY_DUPLICATION_REVIEW.md). O nome reflete as
+// duas razões, não apenas migração. Lista fechada e explícita — nenhuma
 // remoção automática por normalização, lowercase ou similaridade textual.
-const REMOVED_LEGACY_ITEMS = new Set([
+const MIGRATED_OR_DISCARDED_LEGACY_AREAS = new Set([
   "Joelho",
   "Arritmias",
   "Angioplastia",
@@ -114,7 +117,7 @@ export default async function MedicoPage({ params }: PageProps) {
       source: "capability" as const,
     })),
     ...legacyProfileBlocks.areasDeAtuacao
-      .filter((area) => !REMOVED_LEGACY_ITEMS.has(area))
+      .filter((area) => !MIGRATED_OR_DISCARDED_LEGACY_AREAS.has(area))
       .map((area) => ({
         id: area,
         label: area,
