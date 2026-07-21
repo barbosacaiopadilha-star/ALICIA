@@ -3,12 +3,33 @@
 import { useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { MedicoList } from "@/components/alicia/MedicoList";
-import type { MedicoView } from "@/components/alicia/MedicoCard";
+import { MedicoCard, type MedicoView } from "@/components/alicia/MedicoCard";
 
 interface CatalogoBuscaProps {
   medicos: MedicoView[];
   especialidadeNome: string;
   cidadesDisponiveis: string[];
+}
+
+/**
+ * Agrupamento puramente de apresentação por cidade — não é uma regra
+ * de domínio nem de aplicação, apenas uma forma de organizar os
+ * mesmos MedicoCard já usados na lista. Não inventa coordenadas: o
+ * "mapa" desta versão é uma representação geográfica hierárquica
+ * (cidade/estado), a única granularidade real disponível hoje (ver
+ * docs/architecture/CATALOG_MAP_V1_REVIEW.md).
+ */
+function agruparPorCidade(medicos: MedicoView[]): Array<{ cidade: string; medicos: MedicoView[] }> {
+  const grupos = new Map<string, MedicoView[]>();
+  for (const medico of medicos) {
+    const chave = medico.cidade ?? "Cidade não informada";
+    const grupo = grupos.get(chave) ?? [];
+    grupo.push(medico);
+    grupos.set(chave, grupo);
+  }
+  return Array.from(grupos.entries())
+    .sort(([a], [b]) => a.localeCompare(b, "pt-BR"))
+    .map(([cidade, medicosDaCidade]) => ({ cidade, medicos: medicosDaCidade }));
 }
 
 /**
@@ -33,6 +54,7 @@ export function CatalogoBusca({
   const textoNaUrl = searchParams.get("q") ?? "";
   const cidadeNaUrl = searchParams.get("city") ?? "";
   const sortNaUrl = searchParams.get("sort") ?? "relevance";
+  const view = searchParams.get("view") === "map" ? "map" : "list";
 
   // Input de texto controlado localmente (evita perder o foco/cursor a
   // cada tecla, já que reescrever a URL a cada letra remontaria um
@@ -55,7 +77,7 @@ export function CatalogoBusca({
   }
 
   function atualizarParametro(
-    chave: "q" | "city" | "sort",
+    chave: "q" | "city" | "sort" | "view",
     valor: string,
     metodo: "push" | "replace"
   ) {
@@ -153,6 +175,33 @@ export function CatalogoBusca({
         </select>
       </div>
 
+      <div className="flex gap-2" role="group" aria-label="Modo de exibição">
+        <button
+          type="button"
+          onClick={() => atualizarParametro("view", "", "push")}
+          aria-pressed={view === "list"}
+          className={
+            view === "list"
+              ? "border border-gold bg-gold px-4 py-2 text-sm font-medium text-paper"
+              : "border border-hairline px-4 py-2 text-sm font-medium text-ink-soft transition-colors duration-300 hover:border-gold hover:text-gold"
+          }
+        >
+          Lista
+        </button>
+        <button
+          type="button"
+          onClick={() => atualizarParametro("view", "map", "push")}
+          aria-pressed={view === "map"}
+          className={
+            view === "map"
+              ? "border border-gold bg-gold px-4 py-2 text-sm font-medium text-paper"
+              : "border border-hairline px-4 py-2 text-sm font-medium text-ink-soft transition-colors duration-300 hover:border-gold hover:text-gold"
+          }
+        >
+          Mapa
+        </button>
+      </div>
+
       <p aria-live="polite" className="text-xs text-ink-faint">
         {medicos.length === 1
           ? "1 profissional encontrado."
@@ -172,6 +221,22 @@ export function CatalogoBusca({
           >
             Limpar filtros
           </button>
+        </div>
+      ) : view === "map" ? (
+        <div className="flex w-full flex-col gap-6">
+          {agruparPorCidade(medicos).map((grupo) => (
+            <div key={grupo.cidade} className="flex flex-col gap-3">
+              <h3 className="text-sm font-medium uppercase tracking-wide text-ink-faint">
+                {grupo.cidade} · {grupo.medicos.length}{" "}
+                {grupo.medicos.length === 1 ? "profissional" : "profissionais"}
+              </h3>
+              <ul className="flex flex-col gap-4">
+                {grupo.medicos.map((medico) => (
+                  <MedicoCard key={medico.id} medico={medico} especialidadeNome={especialidadeNome} />
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
       ) : (
         <MedicoList medicos={medicos} especialidadeNome={especialidadeNome} />
