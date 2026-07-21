@@ -1,5 +1,26 @@
 # RC Validation Report
 
+## 0. Reconstrução CLEAN-CLONE-01 (2026-07-21)
+
+Clone limpo: `C:\Users\barbo\Projects\ALICIA-clean`
+Remote: `https://github.com/barbosacaiopadilha-star/ALICIA.git`
+Base inicial: `cf76db5dc06ea68e5b4e7ffc88e9b01118d1c2fc`
+Versão candidata: `v0.1.0-rc1`
+
+| Item | Estado |
+|------|--------|
+| Arquitetura encerrada (escopo MVP) | Sim |
+| Código preparado | Sim |
+| Testes nativos 31/31 | Executar e registrar na seção 2 desta validação |
+| Pipeline oficial (GitHub Actions) | Pendente até primeira execução pós-push |
+| Smoke test navegador | Pendente |
+| Publicação pública | Condicionada ao CI + smoke test |
+| Base de rollback | `cf76db5` |
+
+Correção incluída nesta RC: `Venus` → `Flower2` em `EspecialidadeCard.tsx` (chave `venus` preservada).
+
+---
+
 ## 1. Ambiente
 
 **Node:** v22.22.2. **npm:** 10.9.7. **Gerenciador oficial:** npm

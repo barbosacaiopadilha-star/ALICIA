@@ -2,20 +2,13 @@
 
 ## Estado atual
 
-A AliCIA (MVP de curadoria médica dentro do repositório
-`aliviar-landing`, rotas `/alicia/*`) está **arquiteturalmente
-consolidada e tecnicamente validada dentro do possível neste
-ambiente de desenvolvimento**. Domínio, catálogo público, perfil
-público, descoberta (busca/filtro/ordenação/visualização por cidade),
-governança editorial e Knowledge Core estão prontos e cobertos por 31
-testes automatizados reais. O **único bloqueio remanescente é
-externo**: este ambiente de execução não tem acesso de rede a
-`registry.npmjs.org` nem a `github.com` (política de allowlist de
-host, confirmada via `x-deny-reason: host_not_allowed`), e o
-repositório não tem nenhum remoto Git configurado. Nenhuma dessas
-pendências é uma dívida de código — todas dependem exclusivamente de
-rodar este mesmo repositório em um ambiente com acesso normal à
-internet.
+A AliCIA (MVP de curadoria médica, rotas `/alicia/*`) está **arquiteturalmente
+consolidada** no escopo desta release candidate. A reconstrução **CLEAN-CLONE-01**
+(2026-07-21) partiu de `cf76db5` em clone isolado (`ALICIA-clean`), sem alterar o
+repositório misturado em `aliviar-conexao`.
+
+Versão candidata: **v0.1.0-rc1**. Publicação pública condicionada ao pipeline oficial
+(CI) e smoke test em navegador.
 
 ## O que já está concluído
 
