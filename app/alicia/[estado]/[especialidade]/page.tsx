@@ -4,14 +4,16 @@ import { getEstadoPorSigla } from "@/services/alicia/estados";
 import { getEspecialidadePorId } from "@/services/alicia/especialidades";
 import { getMedicosPorEstadoEEspecialidade } from "@/services/alicia/medicos";
 import { createProfessionalCatalogQuery } from "@/infrastructure/alicia/catalog";
+import { matchesProfessionalCatalogSearchCriteria } from "@/application/alicia/catalog";
 import { CatalogoBusca } from "@/components/alicia/CatalogoBusca";
 import type { MedicoView } from "@/components/alicia/MedicoCard";
 
 interface PageProps {
   params: { estado: string; especialidade: string };
+  searchParams: { q?: string; city?: string };
 }
 
-export default async function EspecialidadePage({ params }: PageProps) {
+export default async function EspecialidadePage({ params, searchParams }: PageProps) {
   const estado = await getEstadoPorSigla(params.estado);
 
   if (!estado || !estado.temMedicos) {
@@ -25,14 +27,42 @@ export default async function EspecialidadePage({ params }: PageProps) {
   }
 
   const catalogQuery = createProfessionalCatalogQuery();
-  const professionals = await catalogQuery.list({
+
+  // Única leitura principal do catálogo por renderização. Os filtros
+  // interativos (cidade/texto, vindos de ?city=/?q=) são aplicados em
+  // memória sobre este mesmo resultado, reutilizando o predicado puro
+  // matchesProfessionalCatalogSearchCriteria — a mesma regra já usada
+  // pela própria Query para estado/especialidade, nunca uma segunda
+  // regra nem uma segunda leitura.
+  const professionalsNaRota = await catalogQuery.list({
     estado: estado.sigla,
     especialidade: especialidade.id,
   });
 
+  const cidadesDisponiveis = Array.from(
+    new Set(
+      professionalsNaRota
+        .map((item) => item.primaryLocation?.city)
+        .filter((city): city is string => Boolean(city))
+    )
+  ).sort((a, b) => a.localeCompare(b));
+
+  // Uma cidade inexistente em ?city= simplesmente não corresponde a
+  // nenhum profissional — o predicado já trata isso naturalmente,
+  // produzindo lista vazia (estado vazio da busca), sem quebrar a
+  // página e sem validação adicional.
+  const professionals = professionalsNaRota.filter((item) =>
+    matchesProfessionalCatalogSearchCriteria(item, {
+      cidade: searchParams.city,
+      texto: searchParams.q,
+    })
+  );
+
   // Temporary legacy bridge for the two fields not represented in
   // ProfessionalCatalogProjection (formacaoResumo, verificado). See
-  // docs/architecture/CATALOG_MIGRATION_REVIEW.md.
+  // docs/architecture/CATALOG_MIGRATION_REVIEW.md. Permanece residual
+  // e não foi ampliado nesta tarefa — ver
+  // docs/architecture/CATALOG_DISCOVERY_V1_REVIEW.md.
   const legacyMedicos = await getMedicosPorEstadoEEspecialidade(estado.sigla, especialidade.id);
   const legacyById = new Map(legacyMedicos.map((medico) => [medico.id, medico]));
 
@@ -75,7 +105,7 @@ export default async function EspecialidadePage({ params }: PageProps) {
         </p>
       </div>
 
-      {medicosView.length === 0 ? (
+      {professionalsNaRota.length === 0 ? (
         <div className="flex w-full max-w-2xl flex-col items-center gap-3 border border-hairline bg-canvas px-6 py-12 text-center">
           <p className="text-base font-medium text-ink">
             Nenhum médico disponível nesta especialidade por enquanto.
@@ -89,7 +119,11 @@ export default async function EspecialidadePage({ params }: PageProps) {
           </Link>
         </div>
       ) : (
-        <CatalogoBusca medicos={medicosView} especialidadeNome={especialidade.nome} />
+        <CatalogoBusca
+          medicos={medicosView}
+          especialidadeNome={especialidade.nome}
+          cidadesDisponiveis={cidadesDisponiveis}
+        />
       )}
     </section>
   );
