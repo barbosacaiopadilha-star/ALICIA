@@ -3,11 +3,7 @@ import { notFound } from "next/navigation";
 import { getEstadoPorSigla } from "@/services/alicia/estados";
 import { getEspecialidadePorId } from "@/services/alicia/especialidades";
 import { getMedicosPorEstadoEEspecialidade } from "@/services/alicia/medicos";
-import {
-  createMockProfessionalCatalogSource,
-  MockProfessionalCatalogQuery,
-} from "@/infrastructure/alicia/catalog";
-import { BuildProfessionalCatalogProjection } from "@/application/alicia/catalog";
+import { createProfessionalCatalogQuery } from "@/infrastructure/alicia/catalog";
 import { MedicoList } from "@/components/alicia/MedicoList";
 import type { MedicoView } from "@/components/alicia/MedicoCard";
 
@@ -28,11 +24,8 @@ export default async function EspecialidadePage({ params }: PageProps) {
     notFound();
   }
 
-  const professionalCatalogQuery = new MockProfessionalCatalogQuery(
-    createMockProfessionalCatalogSource(),
-    new BuildProfessionalCatalogProjection()
-  );
-  const catalog = await professionalCatalogQuery.list();
+  const catalogQuery = createProfessionalCatalogQuery();
+  const catalog = await catalogQuery.list();
   const professionals = catalog.filter(
     (item) =>
       item.primaryLocation?.state === estado.sigla &&
