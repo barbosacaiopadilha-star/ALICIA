@@ -1,29 +1,17 @@
-import Image from "next/image";
 import { Reveal } from "@/components/Reveal";
 
+// Os assets finais (public/media/manifesto.mp4 e manifesto-poster.jpg) ainda
+// não existem no repositório. Enquanto não forem adicionados, a seção usa um
+// fundo sólido da identidade para não gerar 404 nem quebrar o layout; ao
+// receber os arquivos, restaurar aqui o <video> com poster.
 export function Manifesto() {
   return (
     <section className="section relative overflow-hidden !p-0" aria-label="Manifesto">
-      <div className="absolute inset-0">
-        <video
-          className="h-full w-full object-cover"
-          autoPlay
-          muted
-          loop
-          playsInline
-          poster="/media/manifesto-poster.jpg"
-        >
-          <source src="/media/manifesto.mp4" type="video/mp4" />
-        </video>
-        <Image
-          src="/media/manifesto-poster.jpg"
-          alt=""
-          fill
-          className="-z-10 object-cover"
-          sizes="100vw"
-          priority={false}
+      <div className="absolute inset-0 bg-ink">
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(169,130,79,0.18),transparent_65%)]"
         />
-        <div className="absolute inset-0 bg-ink/55" />
       </div>
 
       <Reveal className="relative z-10 max-w-editorial px-6 text-center">
