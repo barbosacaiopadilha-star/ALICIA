@@ -12,7 +12,7 @@ import {
   LucideIcon,
   Radiation,
   Sparkles,
-  Venus,
+  Flower2,
 } from "lucide-react";
 import { Especialidade } from "@/types/alicia/especialidade";
 
@@ -20,7 +20,7 @@ const icones: Record<string, LucideIcon> = {
   bone: Bone,
   "heart-pulse": HeartPulse,
   sparkles: Sparkles,
-  venus: Venus,
+  venus: Flower2,
   baby: Baby,
   brain: Brain,
   "brain-circuit": BrainCircuit,
