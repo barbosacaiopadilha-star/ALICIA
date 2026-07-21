@@ -1,4 +1,4 @@
-import type { Medico } from "@/types/alicia/medico";
+import type { RawProfessionalData } from "@/infrastructure/alicia/professional/RawProfessionalData";
 import { LegacyProfessionalMapper } from "@/infrastructure/alicia/professional/LegacyProfessionalMapper";
 import type {
   ProfessionalCatalogSource,
@@ -8,15 +8,15 @@ import type {
 export class MockProfessionalCatalogSource implements ProfessionalCatalogSource {
   private readonly items: ProfessionalCatalogSourceItem[];
 
-  constructor(medicos: ReadonlyArray<Medico>) {
-    this.items = medicos.map((medico) => {
-      const slug = medico.slug?.trim();
+  constructor(records: ReadonlyArray<RawProfessionalData>) {
+    this.items = records.map((record) => {
+      const slug = record.slug?.trim();
       if (!slug) {
         throw new Error("MockProfessionalCatalogSource slug is required.");
       }
 
       return {
-        professional: LegacyProfessionalMapper.toDomain(medico),
+        professional: LegacyProfessionalMapper.toDomain(record),
         slug,
       };
     });

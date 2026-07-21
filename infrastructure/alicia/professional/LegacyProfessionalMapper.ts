@@ -1,4 +1,4 @@
-import type { Medico } from "@/types/alicia/medico";
+import type { RawProfessionalData } from "./RawProfessionalData";
 import type { TipoFormacao } from "@/types/alicia/trajetoria-medica";
 import { Identity } from "@/domain/professional/Identity";
 import { Professional } from "@/domain/professional/Professional";
@@ -14,7 +14,8 @@ import type { CapabilityType } from "@/domain/professional/Capability";
 import { especialidadesBase } from "@/mocks/alicia/especialidades";
 
 /**
- * Converte um registro legado (Medico, de types/alicia/medico.ts) em uma
+ * Converte um registro bruto (RawProfessionalData — hoje satisfeito
+ * estruturalmente por Medico, de types/alicia/medico.ts) em uma
  * instância válida de Professional.
  *
  * Os mocks atuais (mocks/alicia/medicos.ts) não possuem council, number,
@@ -58,7 +59,7 @@ const CAPABILITY_TYPE_MAP: Record<string, CapabilityType> = {
 };
 
 export class LegacyProfessionalMapper {
-  static toDomain(input: Medico): Professional {
+  static toDomain(input: RawProfessionalData): Professional {
     const identity = Identity.create({
       fullName: input.nome,
       photoUrl: input.fotoUrl,
@@ -84,7 +85,7 @@ export class LegacyProfessionalMapper {
     return [Specialty.create({ id: catalogEntry.id, name: catalogEntry.nome })];
   }
 
-  private static mapEducation(formacoes: Medico["formacoes"]): Education[] {
+  private static mapEducation(formacoes: RawProfessionalData["formacoes"]): Education[] {
     const education: Education[] = [];
     for (const formacao of formacoes ?? []) {
       const type = EDUCATION_TYPE_MAP[formacao.tipo];
@@ -105,7 +106,7 @@ export class LegacyProfessionalMapper {
     return education;
   }
 
-  private static mapPracticeLocations(input: Medico): PracticeLocation[] {
+  private static mapPracticeLocations(input: RawProfessionalData): PracticeLocation[] {
     // cidade e estadoSigla representam exclusivamente a localização de
     // atuação do médico nesta tarefa (não o estado de registro profissional).
     if (!input.cidade || !input.estadoSigla) {
@@ -126,7 +127,7 @@ export class LegacyProfessionalMapper {
     ];
   }
 
-  private static mapExperience(experiencias: Medico["experiencias"]): Experience[] {
+  private static mapExperience(experiencias: RawProfessionalData["experiencias"]): Experience[] {
     const experience: Experience[] = [];
     for (const experiencia of experiencias ?? []) {
       // "type" não possui nenhuma correspondência real no legado (não há

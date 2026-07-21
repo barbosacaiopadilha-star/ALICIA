@@ -1,20 +1,25 @@
-import { medicos } from "@/mocks/alicia/medicos";
-import type { Medico } from "@/types/alicia/medico";
+import type { ProfessionalDataProvider } from "./ProfessionalDataProvider";
+import { MockProfessionalDataProvider } from "./MockProfessionalDataProvider";
+import type { RawProfessionalData } from "./RawProfessionalData";
 
 /**
- * Única fronteira de leitura dos dados brutos de profissionais nesta
- * versão do MVP. Hoje lê exclusivamente de mocks/alicia/medicos.ts —
- * esta função é o único ponto que precisará mudar quando uma fonte
- * real (banco de dados, API, importação editorial) substituir os
- * mocks. Nenhum outro arquivo de infraestrutura, aplicação ou service
- * deve importar `medicos` diretamente (ver
- * docs/architecture/REAL_DATA_FOUNDATION_RC.md).
- *
- * Retorna o formato bruto (Medico), não Professional — a conversão
- * para o domínio continua sendo responsabilidade de
- * LegacyProfessionalMapper, chamado por cada consumidor conforme sua
- * própria necessidade (com ou sem slug, por exemplo).
+ * Único ponto de composição do ProfessionalDataProvider ativo. Hoje
+ * sempre retorna MockProfessionalDataProvider — trocar a origem real
+ * no futuro (banco, API, importação editorial) significa alterar
+ * apenas esta função, nunca os consumidores.
  */
-export function listRawProfessionals(): ReadonlyArray<Medico> {
-  return medicos;
+function createProfessionalDataProvider(): ProfessionalDataProvider {
+  return new MockProfessionalDataProvider();
+}
+
+/**
+ * Atalho de conveniência mantido para compatibilidade com os
+ * consumidores existentes (createMockProfessionalCatalogSource,
+ * createMockProfessionalRepository, services/alicia/medicos.ts) —
+ * delega inteiramente ao provider ativo. Nenhum consumidor depende
+ * mais de mocks/alicia/medicos.ts diretamente nem do formato Medico
+ * como contrato — apenas de RawProfessionalData.
+ */
+export function listRawProfessionals(): ReadonlyArray<RawProfessionalData> {
+  return createProfessionalDataProvider().listRawProfessionals();
 }
