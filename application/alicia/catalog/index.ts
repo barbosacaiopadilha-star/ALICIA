@@ -10,8 +10,16 @@ export type {
   ProfessionalCatalogSourceItem,
 } from "./ProfessionalCatalogSource";
 
-export type { ProfessionalCatalogQuery, ProfessionalCatalogSearchCriteria } from "./ProfessionalCatalogQuery";
-export { matchesProfessionalCatalogSearchCriteria } from "./ProfessionalCatalogQuery";
+export type {
+  ProfessionalCatalogQuery,
+  ProfessionalCatalogSearchCriteria,
+  ProfessionalCatalogSort,
+} from "./ProfessionalCatalogQuery";
+export {
+  matchesProfessionalCatalogSearchCriteria,
+  sortProfessionalCatalogProjections,
+  VALID_PROFESSIONAL_CATALOG_SORTS,
+} from "./ProfessionalCatalogQuery";
 
 export { BuildProfessionalCatalogProjection } from "./BuildProfessionalCatalogProjection";
 export type { BuildProfessionalCatalogProjectionInput } from "./BuildProfessionalCatalogProjection";

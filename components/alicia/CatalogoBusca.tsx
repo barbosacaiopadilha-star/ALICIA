@@ -32,6 +32,7 @@ export function CatalogoBusca({
 
   const textoNaUrl = searchParams.get("q") ?? "";
   const cidadeNaUrl = searchParams.get("city") ?? "";
+  const sortNaUrl = searchParams.get("sort") ?? "relevance";
 
   // Input de texto controlado localmente (evita perder o foco/cursor a
   // cada tecla, já que reescrever a URL a cada letra remontaria um
@@ -46,7 +47,18 @@ export function CatalogoBusca({
 
   const filtrosAtivos = textoNaUrl.length > 0 || cidadeNaUrl.length > 0;
 
-  function atualizarParametro(chave: "q" | "city", valor: string, metodo: "push" | "replace") {
+  function atualizarOrdenacao(valor: string) {
+    // "relevance" é o padrão — tratado como ausência de parâmetro,
+    // mesma regra já aplicada a q/city (URL limpa quando o valor é o
+    // estado inicial).
+    atualizarParametro("sort", valor === "relevance" ? "" : valor, "push");
+  }
+
+  function atualizarParametro(
+    chave: "q" | "city" | "sort",
+    valor: string,
+    metodo: "push" | "replace"
+  ) {
     const params = new URLSearchParams(searchParams.toString());
     if (valor) {
       params.set(chave, valor);
@@ -120,6 +132,25 @@ export function CatalogoBusca({
             Limpar filtros
           </button>
         )}
+      </div>
+
+      <div className="flex flex-col gap-2 sm:w-56">
+        <label
+          className="text-xs font-medium uppercase tracking-wide text-ink-faint"
+          htmlFor="catalogo-ordenar-por"
+        >
+          Ordenar por
+        </label>
+        <select
+          id="catalogo-ordenar-por"
+          value={sortNaUrl}
+          onChange={(event) => atualizarOrdenacao(event.target.value)}
+          className="w-full border border-hairline bg-paper px-4 py-2 text-sm text-ink focus:border-gold focus:outline-none"
+        >
+          <option value="relevance">Relevância</option>
+          <option value="name-asc">Nome (A–Z)</option>
+          <option value="name-desc">Nome (Z–A)</option>
+        </select>
       </div>
 
       <p aria-live="polite" className="text-xs text-ink-faint">

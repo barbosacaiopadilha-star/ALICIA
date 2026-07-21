@@ -7,6 +7,14 @@ export interface ProfessionalCatalogSearchCriteria {
   readonly texto?: string;
 }
 
+export type ProfessionalCatalogSort = "relevance" | "name-asc" | "name-desc";
+
+export const VALID_PROFESSIONAL_CATALOG_SORTS: ProfessionalCatalogSort[] = [
+  "relevance",
+  "name-asc",
+  "name-desc",
+];
+
 export interface ProfessionalCatalogQuery {
   list(
     criteria?: ProfessionalCatalogSearchCriteria
@@ -78,4 +86,34 @@ export function matchesProfessionalCatalogSearchCriteria(
   }
 
   return true;
+}
+
+/**
+ * Ordenação pública determinística e explicável — não representa
+ * qualidade médica, apenas critérios totalmente objetivos já
+ * existentes na projeção (nome) ou a preservação da ordem já
+ * produzida pela filtragem ("relevance"). Não utiliza IA, avaliações,
+ * popularidade ou qualquer métrica clínica, porque nenhuma delas
+ * existe como campo público real. Retorna sempre uma nova coleção —
+ * nunca reordena o array original.
+ */
+export function sortProfessionalCatalogProjections(
+  projections: ReadonlyArray<ProfessionalCatalogProjection>,
+  sort: ProfessionalCatalogSort = "relevance"
+): ProfessionalCatalogProjection[] {
+  if (sort === "name-asc") {
+    return [...projections].sort((a, b) =>
+      a.fullName.localeCompare(b.fullName, "pt-BR", { sensitivity: "base" })
+    );
+  }
+
+  if (sort === "name-desc") {
+    return [...projections].sort((a, b) =>
+      b.fullName.localeCompare(a.fullName, "pt-BR", { sensitivity: "base" })
+    );
+  }
+
+  // "relevance": nenhuma métrica de qualidade existe — apenas preserva
+  // a ordem já produzida pela filtragem (estabilidade da lista).
+  return [...projections];
 }

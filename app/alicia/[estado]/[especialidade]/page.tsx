@@ -4,13 +4,18 @@ import { getEstadoPorSigla } from "@/services/alicia/estados";
 import { getEspecialidadePorId } from "@/services/alicia/especialidades";
 import { getMedicosPorEstadoEEspecialidade } from "@/services/alicia/medicos";
 import { createProfessionalCatalogQuery } from "@/infrastructure/alicia/catalog";
-import { matchesProfessionalCatalogSearchCriteria } from "@/application/alicia/catalog";
+import {
+  matchesProfessionalCatalogSearchCriteria,
+  sortProfessionalCatalogProjections,
+  VALID_PROFESSIONAL_CATALOG_SORTS,
+  type ProfessionalCatalogSort,
+} from "@/application/alicia/catalog";
 import { CatalogoBusca } from "@/components/alicia/CatalogoBusca";
 import type { MedicoView } from "@/components/alicia/MedicoCard";
 
 interface PageProps {
   params: { estado: string; especialidade: string };
-  searchParams: { q?: string; city?: string };
+  searchParams: { q?: string; city?: string; sort?: string };
 }
 
 export default async function EspecialidadePage({ params, searchParams }: PageProps) {
@@ -51,12 +56,24 @@ export default async function EspecialidadePage({ params, searchParams }: PagePr
   // nenhum profissional — o predicado já trata isso naturalmente,
   // produzindo lista vazia (estado vazio da busca), sem quebrar a
   // página e sem validação adicional.
-  const professionals = professionalsNaRota.filter((item) =>
+  const professionalsFiltrados = professionalsNaRota.filter((item) =>
     matchesProfessionalCatalogSearchCriteria(item, {
       cidade: searchParams.city,
       texto: searchParams.q,
     })
   );
+
+  // sort inválido ou ausente cai em "relevance" (padrão) — nunca
+  // quebra a página. Filtrar e ordenar comutam para as estratégias
+  // suportadas (relevance/name-asc/name-desc): o resultado final é o
+  // mesmo independentemente da ordem de aplicação.
+  const sort: ProfessionalCatalogSort = VALID_PROFESSIONAL_CATALOG_SORTS.includes(
+    searchParams.sort as ProfessionalCatalogSort
+  )
+    ? (searchParams.sort as ProfessionalCatalogSort)
+    : "relevance";
+
+  const professionals = sortProfessionalCatalogProjections(professionalsFiltrados, sort);
 
   // Temporary legacy bridge for the two fields not represented in
   // ProfessionalCatalogProjection (formacaoResumo, verificado). See
