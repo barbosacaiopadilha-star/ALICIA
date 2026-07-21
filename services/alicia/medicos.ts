@@ -1,5 +1,5 @@
 import { Medico } from "@/types/alicia/medico";
-import { medicos } from "@/mocks/alicia/medicos";
+import { listRawProfessionals } from "@/infrastructure/alicia/professional/professionalDataProvider";
 
 export async function getMedicosPorEstadoEEspecialidade(
   siglaEstado: string,
@@ -8,7 +8,7 @@ export async function getMedicosPorEstadoEEspecialidade(
   const sigla = siglaEstado.toUpperCase();
   const especialidade = idEspecialidade.toLowerCase();
 
-  return medicos.filter(
+  return listRawProfessionals().filter(
     (medico) => medico.estadoSigla === sigla && medico.especialidadeId === especialidade
   );
 }
@@ -22,7 +22,7 @@ export async function getMedicoPorSlug(
   const especialidade = idEspecialidade.toLowerCase();
   const slug = slugMedico.toLowerCase();
 
-  const encontrado = medicos.find(
+  const encontrado = listRawProfessionals().find(
     (medico) =>
       medico.estadoSigla === sigla &&
       medico.especialidadeId === especialidade &&
