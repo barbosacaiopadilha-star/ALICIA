@@ -1,8 +1,7 @@
-import { Medico } from "@/types/alicia/medico";
-import { MedicoCard } from "@/components/alicia/MedicoCard";
+import { MedicoCard, type MedicoView } from "@/components/alicia/MedicoCard";
 
 interface MedicoListProps {
-  medicos: Medico[];
+  medicos: MedicoView[];
   especialidadeNome: string;
 }
 

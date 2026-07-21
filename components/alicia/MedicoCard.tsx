@@ -1,9 +1,25 @@
 import Link from "next/link";
-import { Medico } from "@/types/alicia/medico";
 import { iniciais } from "@/lib/alicia/texto";
 
+// View de apresentação: combina ProfessionalCatalogProjection (nome,
+// localização, link) com os dois campos ainda sem representação no
+// domínio (formacaoResumo, verificado) — ver
+// docs/architecture/CATALOG_MIGRATION_REVIEW.md. Não pertence ao
+// domínio, não é um Medico reconstruído.
+export interface MedicoView {
+  id: string;
+  slug: string;
+  nome: string;
+  cidade?: string;
+  instituicaoPrincipal?: string;
+  estadoSigla: string;
+  especialidadeId: string;
+  formacaoResumo?: string;
+  verificado: boolean;
+}
+
 interface MedicoCardProps {
-  medico: Medico;
+  medico: MedicoView;
   especialidadeNome: string;
 }
 
@@ -20,13 +36,19 @@ export function MedicoCard({ medico, especialidadeNome }: MedicoCardProps) {
       <div className="flex flex-1 flex-col gap-2">
         <div className="flex flex-col gap-1">
           <h3 className="font-display text-lg font-normal text-ink">{medico.nome}</h3>
-          <p className="text-sm text-ink-soft">
-            {especialidadeNome} · {medico.cidade}
-          </p>
+          {medico.cidade && (
+            <p className="text-sm text-ink-soft">
+              {especialidadeNome} · {medico.cidade}
+            </p>
+          )}
         </div>
 
-        <p className="text-sm text-ink-soft">{medico.instituicaoPrincipal}</p>
-        <p className="text-sm text-ink-faint">{medico.formacaoResumo}</p>
+        {medico.instituicaoPrincipal && (
+          <p className="text-sm text-ink-soft">{medico.instituicaoPrincipal}</p>
+        )}
+        {medico.formacaoResumo && (
+          <p className="text-sm text-ink-faint">{medico.formacaoResumo}</p>
+        )}
 
         {medico.verificado && (
           <span className="inline-flex w-fit items-center gap-1 text-xs font-medium uppercase tracking-wide text-gold">

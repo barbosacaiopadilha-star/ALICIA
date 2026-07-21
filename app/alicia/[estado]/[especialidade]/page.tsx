@@ -3,7 +3,13 @@ import { notFound } from "next/navigation";
 import { getEstadoPorSigla } from "@/services/alicia/estados";
 import { getEspecialidadePorId } from "@/services/alicia/especialidades";
 import { getMedicosPorEstadoEEspecialidade } from "@/services/alicia/medicos";
+import {
+  createMockProfessionalCatalogSource,
+  MockProfessionalCatalogQuery,
+} from "@/infrastructure/alicia/catalog";
+import { BuildProfessionalCatalogProjection } from "@/application/alicia/catalog";
 import { MedicoList } from "@/components/alicia/MedicoList";
+import type { MedicoView } from "@/components/alicia/MedicoCard";
 
 interface PageProps {
   params: { estado: string; especialidade: string };
@@ -22,7 +28,37 @@ export default async function EspecialidadePage({ params }: PageProps) {
     notFound();
   }
 
-  const medicos = await getMedicosPorEstadoEEspecialidade(estado.sigla, especialidade.id);
+  const professionalCatalogQuery = new MockProfessionalCatalogQuery(
+    createMockProfessionalCatalogSource(),
+    new BuildProfessionalCatalogProjection()
+  );
+  const catalog = await professionalCatalogQuery.list();
+  const professionals = catalog.filter(
+    (item) =>
+      item.primaryLocation?.state === estado.sigla &&
+      item.specialties.some((specialty) => specialty.id === especialidade.id)
+  );
+
+  // Temporary legacy bridge for the two fields not represented in
+  // ProfessionalCatalogProjection (formacaoResumo, verificado). See
+  // docs/architecture/CATALOG_MIGRATION_REVIEW.md.
+  const legacyMedicos = await getMedicosPorEstadoEEspecialidade(estado.sigla, especialidade.id);
+  const legacyById = new Map(legacyMedicos.map((medico) => [medico.id, medico]));
+
+  const medicosView: MedicoView[] = professionals.map((professional) => {
+    const legacy = legacyById.get(professional.id);
+    return {
+      id: professional.id,
+      slug: professional.slug,
+      nome: professional.fullName,
+      cidade: professional.primaryLocation?.city,
+      instituicaoPrincipal: professional.primaryLocation?.name,
+      estadoSigla: professional.primaryLocation?.state ?? estado.sigla,
+      especialidadeId: especialidade.id,
+      formacaoResumo: legacy?.formacaoResumo,
+      verificado: legacy?.verificado ?? false,
+    };
+  });
 
   return (
     <section className="flex flex-col items-center gap-8 px-6 py-16 sm:px-10">
@@ -48,7 +84,7 @@ export default async function EspecialidadePage({ params }: PageProps) {
         </p>
       </div>
 
-      {medicos.length === 0 ? (
+      {medicosView.length === 0 ? (
         <div className="flex w-full max-w-2xl flex-col items-center gap-3 border border-hairline bg-canvas px-6 py-12 text-center">
           <p className="text-base font-medium text-ink">
             Nenhum médico disponível nesta especialidade por enquanto.
@@ -62,7 +98,7 @@ export default async function EspecialidadePage({ params }: PageProps) {
           </Link>
         </div>
       ) : (
-        <MedicoList medicos={medicos} especialidadeNome={especialidade.nome} />
+        <MedicoList medicos={medicosView} especialidadeNome={especialidade.nome} />
       )}
     </section>
   );
