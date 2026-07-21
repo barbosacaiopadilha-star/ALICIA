@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getEstadoPorSigla } from "@/services/alicia/estados";
 import { getEspecialidadesPorEstado } from "@/services/alicia/especialidades";
@@ -5,6 +6,18 @@ import { EspecialidadeGrid } from "@/components/alicia/EspecialidadeGrid";
 
 interface PageProps {
   params: { estado: string };
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const estado = await getEstadoPorSigla(params.estado);
+  if (!estado || !estado.temMedicos) {
+    return {};
+  }
+  return {
+    title: `AliCIA — Médicos em ${estado.nome}`,
+    description: `Escolha a especialidade para conhecer médicos em ${estado.nome}.`,
+    alternates: { canonical: `/alicia/${estado.sigla}` },
+  };
 }
 
 export default async function EstadoPage({ params }: PageProps) {

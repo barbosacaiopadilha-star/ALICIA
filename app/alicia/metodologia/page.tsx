@@ -1,5 +1,13 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { getMetodologia } from "@/services/alicia/metodologia";
+
+export const metadata: Metadata = {
+  title: "Metodologia — AliCIA",
+  description:
+    "Como a AliCIA analisa a formação e a trajetória acadêmica dos médicos apresentados.",
+  alternates: { canonical: "/alicia/metodologia" },
+};
 import { MetodologiaIntro } from "@/components/alicia/MetodologiaIntro";
 import { CriterioMetodologia } from "@/components/alicia/CriterioMetodologia";
 import { FontesMetodologia } from "@/components/alicia/FontesMetodologia";

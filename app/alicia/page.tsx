@@ -1,5 +1,12 @@
+import type { Metadata } from "next";
 import { getEstados } from "@/services/alicia/estados";
 import { EstadoGrid } from "@/components/alicia/EstadoGrid";
+
+export const metadata: Metadata = {
+  title: "AliCIA — Escolha seu estado",
+  description: "Selecione onde você está para começar sua Curadoria Médica.",
+  alternates: { canonical: "/alicia" },
+};
 
 export default async function AliciaPage() {
   const estados = await getEstados();

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getEstadoPorSigla } from "@/services/alicia/estados";
@@ -16,6 +17,22 @@ import type { MedicoView } from "@/components/alicia/MedicoCard";
 interface PageProps {
   params: { estado: string; especialidade: string };
   searchParams: { q?: string; city?: string; sort?: string };
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const estado = await getEstadoPorSigla(params.estado);
+  if (!estado || !estado.temMedicos) {
+    return {};
+  }
+  const especialidade = await getEspecialidadePorId(estado.sigla, params.especialidade);
+  if (!especialidade) {
+    return {};
+  }
+  return {
+    title: `${especialidade.nome} em ${estado.nome} — AliCIA`,
+    description: `Médicos de ${especialidade.nome} em ${estado.nome}, com formação e trajetória acadêmica.`,
+    alternates: { canonical: `/alicia/${estado.sigla}/${especialidade.id}` },
+  };
 }
 
 export default async function EspecialidadePage({ params, searchParams }: PageProps) {

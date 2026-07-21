@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Fraunces, Inter } from "next/font/google";
+import { siteUrl } from "@/lib/site";
 import "./globals.css";
 
 const display = Fraunces({
@@ -22,14 +23,22 @@ const description =
   "Aliviar é a Curadoria Médica que ajuda você a escolher, com consciência, quem irá conduzir seu tratamento.";
 
 export const metadata: Metadata = {
-  title,
+  title: {
+    default: title,
+    template: "%s · Aliviar",
+  },
   description,
-  metadataBase: new URL("https://aliviar.com.br"),
+  metadataBase: new URL(siteUrl),
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
     title,
     description,
     type: "website",
     locale: "pt_BR",
+    url: "/",
+    siteName: "Aliviar",
   },
   twitter: {
     card: "summary_large_image",

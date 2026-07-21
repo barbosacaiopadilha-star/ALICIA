@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getEstadoPorSigla } from "@/services/alicia/estados";
@@ -11,6 +12,25 @@ import type { FormacaoView } from "@/components/alicia/FormacaoItem";
 
 interface PageProps {
   params: { estado: string; especialidade: string; medico: string };
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const medico = await getMedicoPorSlug(params.estado, params.especialidade, params.medico);
+  if (!medico) {
+    return {};
+  }
+  const especialidade = await getEspecialidadePorId(
+    medico.estadoSigla,
+    medico.especialidadeId
+  );
+  const especialidadeNome = especialidade?.nome ?? medico.especialidadeId;
+  return {
+    title: `${medico.nome} — ${especialidadeNome} em ${medico.cidade}`,
+    description: medico.bioCurta ?? medico.formacaoResumo,
+    alternates: {
+      canonical: `/alicia/${medico.estadoSigla}/${medico.especialidadeId}/${medico.slug}`,
+    },
+  };
 }
 
 // View de apresentação interna a esta página — não pertence ao domínio,
