@@ -17,6 +17,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     title: `AliCIA — Médicos em ${estado.nome}`,
     description: `Escolha a especialidade para conhecer médicos em ${estado.nome}.`,
     alternates: { canonical: `/alicia/${estado.sigla}` },
+    // Catálogo demonstrativo (dados fictícios de médicos): fora do índice
+    // público enquanto não houver dados reais.
+    robots: { index: false, follow: true },
   };
 }
 

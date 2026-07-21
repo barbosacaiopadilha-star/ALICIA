@@ -30,6 +30,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     alternates: {
       canonical: `/alicia/${medico.estadoSigla}/${medico.especialidadeId}/${medico.slug}`,
     },
+    // Catálogo demonstrativo (dados fictícios de médicos): fora do índice
+    // público enquanto não houver dados reais.
+    robots: { index: false, follow: true },
   };
 }
 
