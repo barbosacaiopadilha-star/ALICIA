@@ -2,7 +2,13 @@
 
 // Cobre falhas no próprio layout raiz; substitui o layout, então precisa
 // renderizar html/body e não depende do CSS global.
-export default function GlobalError({ reset }: { error: Error & { digest?: string }; reset: () => void }) {
+export default function GlobalError({
+  error,
+  reset,
+}: {
+  error: Error & { digest?: string };
+  reset: () => void;
+}) {
   return (
     <html lang="pt-BR">
       <body
@@ -27,6 +33,11 @@ export default function GlobalError({ reset }: { error: Error & { digest?: strin
         <p style={{ maxWidth: "42rem", color: "#524E43", margin: 0 }}>
           Ocorreu um erro inesperado. Tente novamente em instantes.
         </p>
+        {error.digest ? (
+          <p style={{ fontSize: "0.75rem", color: "#8B8678", margin: 0 }}>
+            Código do incidente: {error.digest}
+          </p>
+        ) : null}
         <button
           type="button"
           onClick={reset}

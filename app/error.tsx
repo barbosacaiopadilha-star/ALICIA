@@ -2,7 +2,17 @@
 
 import Link from "next/link";
 
-export default function Error({ reset }: { error: Error & { digest?: string }; reset: () => void }) {
+// error.digest é o identificador não sensível que o Next gera para erros de
+// servidor — o mesmo valor aparece nos logs de runtime, permitindo correlação
+// no suporte. Logging client→servidor sem serviço externo não é confiável no
+// App Router; a captura server-side já acontece via digest (limitação registrada).
+export default function Error({
+  error,
+  reset,
+}: {
+  error: Error & { digest?: string };
+  reset: () => void;
+}) {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center gap-6 bg-paper px-6 text-center">
       <p className="text-xs font-medium uppercase tracking-wide text-ink-faint">Erro inesperado</p>
@@ -13,6 +23,9 @@ export default function Error({ reset }: { error: Error & { digest?: string }; r
         Ocorreu um erro ao carregar esta página. Você pode tentar novamente ou
         voltar para a AliCIA.
       </p>
+      {error.digest && (
+        <p className="text-xs text-ink-faint">Código do incidente: {error.digest}</p>
+      )}
       <div className="mt-2 flex flex-col items-center gap-3 sm:flex-row">
         <button
           type="button"
