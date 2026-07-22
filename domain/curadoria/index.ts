@@ -4,4 +4,5 @@ export * from "./Observacao.ts";
 export * from "./StatusDaCuradoria.ts";
 export * from "./Criterio.ts";
 export * from "./EvidenceReference.ts";
+export * from "./SnapshotDePublicacao.ts";
 export * from "./CasoDeCuradoria.ts";
