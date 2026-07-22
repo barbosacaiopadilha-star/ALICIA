@@ -2,10 +2,8 @@
 
 import { useMemo, useState } from "react";
 import { montarCasoControlado } from "@/components/alicia/montarCasoControlado";
-import {
-  registrarDecisaoDoTrio,
-  type DecisaoRegistrada,
-} from "@/components/alicia/registrarDecisaoDoTrio";
+import { confirmarCuradoria } from "@/components/alicia/confirmarCuradoria";
+import type { SessaoDeCuradoria } from "@/domain/curadoria";
 
 // Workspace interno do curador (PRODUCT-WAVE-P1). Funcional antes de
 // bonito: painéis empilhados, sem navegação própria. Toda a lógica de
@@ -34,10 +32,16 @@ export function CuradoriaWorkspace() {
   const [autor, setAutor] = useState("");
   const [motivos, setMotivos] = useState<Record<string, string>>({});
   const [evidencias, setEvidencias] = useState<Record<string, string[]>>({});
-  const [decisao, setDecisao] = useState<DecisaoRegistrada | null>(null);
+  const [sessao, setSessao] = useState<SessaoDeCuradoria | null>(null);
   const [erro, setErro] = useState<string | null>(null);
 
   const trioCompleto = selecionados.length === 3;
+  const decisao = sessao?.decisao ?? null;
+  const prontoParaConfirmar =
+    trioCompleto &&
+    autor.trim().length > 0 &&
+    selecionados.every((professionalId) => (motivos[professionalId] ?? "").trim().length > 0) &&
+    selecionados.every((professionalId) => (evidencias[professionalId] ?? []).length > 0);
 
   function alternarSelecao(professionalId: string) {
     if (decisao) return;
@@ -72,18 +76,18 @@ export function CuradoriaWorkspace() {
   function confirmarDecisao() {
     setErro(null);
     try {
-      const resultado = registrarDecisaoDoTrio({
-        casoId: caso.id.value,
+      const resultado = confirmarCuradoria({
+        caso,
         conjunto,
         escolhas: selecionados.map((professionalId) => ({
           professionalId,
-          texto: motivos[professionalId] ?? "",
+          justificativa: motivos[professionalId] ?? "",
           evidenciaIds: evidencias[professionalId] ?? [],
         })),
         autor,
         em: new Date(),
       });
-      setDecisao(resultado);
+      setSessao(resultado);
     } catch (excecao) {
       setErro(excecao instanceof Error ? excecao.message : String(excecao));
     }
@@ -95,7 +99,7 @@ export function CuradoriaWorkspace() {
     setAutor("");
     setMotivos({});
     setEvidencias({});
-    setDecisao(null);
+    setSessao(null);
     setErro(null);
   }
 
@@ -294,10 +298,18 @@ export function CuradoriaWorkspace() {
             <button
               type="button"
               onClick={confirmarDecisao}
-              className="self-start border border-gold px-6 py-2 text-sm font-medium text-ink hover:bg-gold hover:text-paper"
+              disabled={!prontoParaConfirmar}
+              className="self-start border border-gold px-6 py-2 text-sm font-medium text-ink enabled:hover:bg-gold enabled:hover:text-paper disabled:cursor-not-allowed disabled:opacity-40"
             >
-              Registrar decisão
+              Confirmar Curadoria
             </button>
+            {!prontoParaConfirmar ? (
+              <p className="text-xs text-ink-faint">
+                O botão habilita com três médicos, autor identificado, uma
+                justificativa para cada médico e ao menos uma evidência por
+                justificativa.
+              </p>
+            ) : null}
           </div>
         ) : null}
         {erro ? (
@@ -307,20 +319,38 @@ export function CuradoriaWorkspace() {
         ) : null}
       </section>
 
-      {decisao ? (
-        <section aria-label="Auditoria da decisão" className="flex flex-col gap-4 border border-gold p-4">
-          <h2 className="font-display text-xl text-ink">Decisão registrada — auditoria</h2>
+      {sessao && decisao ? (
+        <section aria-label="Histórico da decisão" className="flex flex-col gap-4 border border-gold p-4">
+          <h2 className="font-display text-xl text-ink">Curadoria confirmada — histórico</h2>
+          <p className="text-xs text-ink-faint">
+            Registro somente leitura. Sessão {sessao.id} · status {sessao.status} ·
+            encerrada por {sessao.encerradoPor}.
+          </p>
+          <dl className="flex flex-col gap-1 text-sm text-ink-soft">
+            <div>
+              <dt className="inline font-medium text-ink">Autor: </dt>
+              <dd className="inline">{decisao.autor}</dd>
+            </div>
+            <div>
+              <dt className="inline font-medium text-ink">Horário: </dt>
+              <dd className="inline">{decisao.timestamp.toISOString()}</dd>
+            </div>
+            <div>
+              <dt className="inline font-medium text-ink">Trio: </dt>
+              <dd className="inline">
+                {decisao.trioSelecionado
+                  .map((id) => medicosPorId.get(id)?.nome ?? id)
+                  .join(" · ")}
+              </dd>
+            </div>
+          </dl>
           <ul className="flex flex-col gap-3">
-            {decisao.historico.escolhas.map((motivo) => (
+            {decisao.motivos.map((motivo) => (
               <li key={motivo.professionalId} className="flex flex-col gap-1 text-sm">
                 <span className="font-medium text-ink">
                   {medicosPorId.get(motivo.professionalId)?.nome ?? motivo.professionalId}
                 </span>
-                <span className="text-ink-soft">Autor: {motivo.autorId}</span>
-                <span className="text-ink-soft">
-                  Registrado em: {motivo.registradoEm.toISOString()}
-                </span>
-                <span className="text-ink-soft">Motivo: {motivo.texto}</span>
+                <span className="text-ink-soft">Justificativa: {motivo.texto}</span>
                 <span className="text-ink-soft">
                   Evidências:{" "}
                   {motivo.evidenciaIds
@@ -331,12 +361,11 @@ export function CuradoriaWorkspace() {
             ))}
           </ul>
           <div className="flex flex-col gap-1">
-            <h3 className="text-sm font-medium text-ink">Trilha de alterações</h3>
+            <h3 className="text-sm font-medium text-ink">Trilha de auditoria da sessão</h3>
             <ul className="flex flex-col gap-1 text-xs text-ink-soft">
-              {decisao.registro.alteracoes.map((alteracao) => (
+              {sessao.alteracoes.map((alteracao) => (
                 <li key={alteracao.id}>
-                  {alteracao.id} · {alteracao.tipo} · {alteracao.autorId} · {alteracao.em} ·{" "}
-                  {alteracao.dados.professionalId}
+                  {alteracao.id} · {alteracao.tipo} · {alteracao.autor} · {alteracao.timestamp}
                 </li>
               ))}
             </ul>

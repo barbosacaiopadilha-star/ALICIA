@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { SessaoDeCuradoria } from "./SessaoDeCuradoria.ts";
 import { ConjuntoElegivel } from "./ConjuntoElegivel.ts";
 import { Observacao } from "./Observacao.ts";
+import { MotivoDaEscolha } from "./MotivoDaEscolha.ts";
 
 const T0 = new Date("2026-07-22T12:00:00.000Z");
 const T1 = new Date("2026-07-22T12:05:00.000Z");
@@ -198,6 +199,109 @@ test("imutabilidade: alterações congeladas, datas por cópia, conjunto intocá
   assert.equal(s.conjuntoElegivel, conjunto);
   assert.throws(() => (s.conjuntoElegivel.elegiveis as unknown[]).push("med-999"));
   assert.throws(() => (s.conjuntoElegivel.exclusoes as unknown[]).push({}));
+});
+
+function motivoPara(professionalId: string, autorId = "curador-001"): MotivoDaEscolha {
+  return MotivoDaEscolha.create({
+    casoId: "caso-001",
+    professionalId,
+    texto: "Residência e registro comprovados, compatíveis com o caso.",
+    evidenciaIds: [`ev-${professionalId}`],
+    autorId,
+    registradoEm: T1,
+  });
+}
+
+const conjuntoDeTres = ConjuntoElegivel.create({
+  casoId: "caso-001",
+  snapshotId: "snap-001",
+  elegiveis: ["med-001", "med-002", "med-006"],
+});
+
+function sessaoAguardandoDecisao(): SessaoDeCuradoria {
+  const s = SessaoDeCuradoria.criar({
+    id: "sessao-001",
+    casoId: "caso-001",
+    snapshotId: "snap-001",
+    conjuntoElegivel: conjuntoDeTres,
+    iniciadoPor: "curador-001",
+    createdAt: T0,
+  });
+  s.iniciar({ autor: "curador-001", em: T1 });
+  s.alterarStatus("aguardando_decisao", { autor: "curador-001", em: T1 });
+  return s;
+}
+
+test("registrarDecisao: grava a decisão, audita e encerra a sessão", () => {
+  const s = sessaoAguardandoDecisao();
+  const decisao = s.registrarDecisao({
+    autor: "curador-001",
+    motivos: [motivoPara("med-001"), motivoPara("med-002"), motivoPara("med-006")],
+    em: T1,
+  });
+  assert.equal(s.status, "concluida");
+  assert.equal(s.encerradoPor, "curador-001");
+  assert.equal(s.decisao, decisao);
+  assert.deepEqual([...decisao.trioSelecionado], ["med-001", "med-002", "med-006"]);
+  const tipos = s.alteracoes.map((a) => a.tipo);
+  assert.deepEqual(tipos.slice(-2), ["decisao_registrada", "sessao_encerrada"]);
+  const auditoria = s.alteracoes.find((a) => a.tipo === "decisao_registrada");
+  assert.equal(auditoria?.autor, "curador-001");
+  assert.deepEqual(auditoria?.payload, { trio: "med-001, med-002, med-006" });
+});
+
+test("registrarDecisao: exige aguardando_decisao e bloqueia segunda decisão", () => {
+  const criada = SessaoDeCuradoria.criar({
+    id: "sessao-002",
+    casoId: "caso-001",
+    snapshotId: "snap-001",
+    conjuntoElegivel: conjuntoDeTres,
+    iniciadoPor: "curador-001",
+    createdAt: T0,
+  });
+  assert.throws(
+    () =>
+      criada.registrarDecisao({
+        autor: "curador-001",
+        motivos: [motivoPara("med-001"), motivoPara("med-002"), motivoPara("med-006")],
+      }),
+    /exige "aguardando_decisao"/
+  );
+
+  const s = sessaoAguardandoDecisao();
+  s.registrarDecisao({
+    autor: "curador-001",
+    motivos: [motivoPara("med-001"), motivoPara("med-002"), motivoPara("med-006")],
+    em: T1,
+  });
+  assert.throws(
+    () =>
+      s.registrarDecisao({
+        autor: "curador-001",
+        motivos: [motivoPara("med-001"), motivoPara("med-002"), motivoPara("med-006")],
+      }),
+    /uma sessão decide uma única vez/
+  );
+});
+
+test("registrarDecisao: só elegíveis; menos ou mais de três rejeitados; nada gravado no erro", () => {
+  const s = sessaoAguardandoDecisao();
+  assert.throws(
+    () =>
+      s.registrarDecisao({
+        autor: "curador-001",
+        motivos: [motivoPara("med-001"), motivoPara("med-002"), motivoPara("med-999")],
+      }),
+    /não está no conjunto elegível/
+  );
+  assert.throws(
+    () => s.registrarDecisao({ autor: "curador-001", motivos: [motivoPara("med-001")] }),
+    /exatamente três/
+  );
+  // a sessão permanece aberta e sem decisão após tentativas inválidas
+  assert.equal(s.status, "aguardando_decisao");
+  assert.equal(s.decisao, undefined);
+  assert.ok(!s.alteracoes.some((a) => a.tipo === "decisao_registrada"));
 });
 
 test("sessão organiza, não decide: nenhum método de seleção/aprovação/rejeição existe", () => {

@@ -1,5 +1,7 @@
 import type { ConjuntoElegivel } from "./ConjuntoElegivel.ts";
 import type { Observacao } from "./Observacao.ts";
+import type { MotivoDaEscolha } from "./MotivoDaEscolha.ts";
+import { RegistroDeDecisao } from "./RegistroDeDecisao.ts";
 import {
   criarRegistroDeAlteracao,
   type RegistroDeAlteracao,
@@ -61,6 +63,7 @@ export class SessaoDeCuradoria {
   private _status: StatusDaSessao;
   private _observacoes: Observacao[];
   private _alteracoes: RegistroDeAlteracao[];
+  private _decisao?: RegistroDeDecisao;
   private _encerradoPor?: string;
   private readonly _createdAt: Date;
   private _updatedAt: Date;
@@ -158,6 +161,10 @@ export class SessaoDeCuradoria {
     return Object.freeze([...this._alteracoes]);
   }
 
+  get decisao(): RegistroDeDecisao | undefined {
+    return this._decisao;
+  }
+
   get encerradoPor(): string | undefined {
     return this._encerradoPor;
   }
@@ -233,6 +240,55 @@ export class SessaoDeCuradoria {
     this.auditar("observacao_registrada", props.autor, props.em ?? new Date(), {
       texto: observacao.texto,
     });
+  }
+
+  /**
+   * Registra a decisão humana da curadoria (PRODUCT-WAVE-P2) e encerra
+   * a sessão. O sistema não escolhe: recebe exatamente três motivos —
+   * um por médico, todos com evidências (MotivoDaEscolha) — valida-os
+   * contra o conjunto elegível, grava a auditoria e conclui.
+   *
+   * Uma sessão decide UMA única vez: a conclusão é terminal e uma
+   * segunda tentativa é rejeitada.
+   */
+  registrarDecisao(props: {
+    autor: string;
+    motivos: ReadonlyArray<MotivoDaEscolha>;
+    em?: Date;
+  }): RegistroDeDecisao {
+    const em = props.em ?? new Date();
+    if (this._decisao) {
+      throw new Error(
+        "SessaoDeCuradoria: decisão já registrada — uma sessão decide uma única vez."
+      );
+    }
+    if (this._status !== "aguardando_decisao") {
+      throw new Error(
+        `SessaoDeCuradoria: registrarDecisao exige "aguardando_decisao" — sessão está "${this._status}".`
+      );
+    }
+    const registro = RegistroDeDecisao.create({
+      sessaoId: this.id,
+      casoId: this.casoId,
+      snapshotId: this.snapshotId,
+      autor: props.autor,
+      motivos: props.motivos,
+      timestamp: em,
+    });
+    for (const professionalId of registro.trioSelecionado) {
+      if (!this._conjuntoElegivel.contem(professionalId)) {
+        throw new Error(
+          `SessaoDeCuradoria: "${professionalId}" não está no conjunto elegível — só elegíveis podem ser escolhidos.`
+        );
+      }
+    }
+    this._decisao = registro;
+    this.auditar("decisao_registrada", registro.autor, em, {
+      trio: registro.trioSelecionado.join(", "),
+    });
+    this.transicionar("concluida", "sessao_encerrada", registro.autor, em);
+    this._encerradoPor = registro.autor;
+    return registro;
   }
 
   /** Conclui a sessão: "aguardando_decisao" → "concluida". */

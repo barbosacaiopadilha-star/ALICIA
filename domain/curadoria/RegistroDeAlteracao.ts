@@ -15,6 +15,7 @@ export const TIPOS_DE_ALTERACAO_DA_SESSAO = [
   "sessao_iniciada",
   "status_alterado",
   "observacao_registrada",
+  "decisao_registrada",
   "sessao_encerrada",
   "sessao_cancelada",
 ] as const;
