@@ -6,4 +6,5 @@ export * from "./Criterio.ts";
 export * from "./EvidenceReference.ts";
 export * from "./SnapshotDePublicacao.ts";
 export * from "./ConjuntoElegivel.ts";
+export * from "./FichaDeCompatibilidade.ts";
 export * from "./CasoDeCuradoria.ts";
