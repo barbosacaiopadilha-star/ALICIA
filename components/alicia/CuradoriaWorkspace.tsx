@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { montarCasoControlado } from "@/components/alicia/montarCasoControlado";
 import { confirmarCuradoria } from "@/components/alicia/confirmarCuradoria";
+import { CHAVE_DECISAO_DA_CURADORIA } from "@/components/alicia/gerarDossieDeCuradoria";
 import type { SessaoDeCuradoria } from "@/domain/curadoria";
 
 // Workspace interno do curador (PRODUCT-WAVE-P1). Funcional antes de
@@ -88,6 +89,12 @@ export function CuradoriaWorkspace() {
         em: new Date(),
       });
       setSessao(resultado);
+      if (resultado.decisao) {
+        window.localStorage.setItem(
+          CHAVE_DECISAO_DA_CURADORIA,
+          resultado.decisao.serializar()
+        );
+      }
     } catch (excecao) {
       setErro(excecao instanceof Error ? excecao.message : String(excecao));
     }
@@ -101,6 +108,7 @@ export function CuradoriaWorkspace() {
     setEvidencias({});
     setSessao(null);
     setErro(null);
+    window.localStorage.removeItem(CHAVE_DECISAO_DA_CURADORIA);
   }
 
   const fichaAberta = fichaAbertaId
@@ -370,13 +378,21 @@ export function CuradoriaWorkspace() {
               ))}
             </ul>
           </div>
-          <button
-            type="button"
-            onClick={reiniciar}
-            className="self-start border border-hairline px-4 py-2 text-xs text-ink hover:border-gold"
-          >
-            Reiniciar demonstração
-          </button>
+          <div className="flex flex-wrap items-center gap-3">
+            <a
+              href="/paciente/dossie"
+              className="border border-gold px-4 py-2 text-xs font-medium text-ink hover:bg-gold hover:text-paper"
+            >
+              Ver o que o paciente verá
+            </a>
+            <button
+              type="button"
+              onClick={reiniciar}
+              className="border border-hairline px-4 py-2 text-xs text-ink hover:border-gold"
+            >
+              Reiniciar demonstração
+            </button>
+          </div>
         </section>
       ) : null}
     </main>

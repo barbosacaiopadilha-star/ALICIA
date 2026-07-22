@@ -29,6 +29,8 @@ export interface MedicoControlado {
   readonly nome: string;
   readonly especialidade: string;
   readonly cidade: string;
+  readonly formacao: ReadonlyArray<string>;
+  readonly experiencia: ReadonlyArray<string>;
 }
 
 export interface EvidenciaControlada {
@@ -103,12 +105,78 @@ export const CASO_CONTROLADO = {
   ] as ReadonlyArray<CriterioControlado>,
 
   medicos: [
-    { id: "med-001", nome: "Ana Martins", especialidade: "Ortopedia", cidade: "São Paulo" },
-    { id: "med-002", nome: "Carlos Eduardo Lima", especialidade: "Ortopedia", cidade: "São Paulo" },
-    { id: "med-003", nome: "Patrícia Nogueira", especialidade: "Ortopedia", cidade: "São Paulo" },
-    { id: "med-004", nome: "Bruno Teixeira", especialidade: "Ortopedia", cidade: "São Paulo" },
-    { id: "med-005", nome: "Juliana Castro", especialidade: "Ortopedia", cidade: "São Paulo" },
-    { id: "med-006", nome: "Felipe Rocha", especialidade: "Ortopedia", cidade: "São Paulo" },
+    {
+      id: "med-001",
+      nome: "Ana Martins",
+      especialidade: "Ortopedia",
+      cidade: "São Paulo",
+      formacao: [
+        "Graduação em Medicina — Universidade Médica do Sudeste (fictícia)",
+        "Residência em Ortopedia e Traumatologia — Hospital Escola Santa Aurora (fictício)",
+      ],
+      experiencia: [
+        "Atuação em cirurgia do joelho e reabilitação ortopédica",
+        "Acompanhamento de trauma esportivo em centro clínico (fictício)",
+      ],
+    },
+    {
+      id: "med-002",
+      nome: "Carlos Eduardo Lima",
+      especialidade: "Ortopedia",
+      cidade: "São Paulo",
+      formacao: [
+        "Graduação em Medicina — Instituto Médico do Interior (fictício)",
+        "Residência em Ortopedia e Traumatologia — Hospital Central Fictício",
+      ],
+      experiencia: [
+        "Atuação em ortopedia geral com atendimento presencial em São Paulo",
+      ],
+    },
+    {
+      id: "med-003",
+      nome: "Patrícia Nogueira",
+      especialidade: "Ortopedia",
+      cidade: "São Paulo",
+      formacao: [
+        "Graduação em Medicina — Universidade do Norte (fictícia)",
+        "Residência em Ortopedia e Traumatologia — Hospital Universitário do Norte (fictício)",
+      ],
+      experiencia: [
+        "Atuação em ortopedia com publicação sobre reabilitação pós-artroscopia",
+      ],
+    },
+    {
+      id: "med-004",
+      nome: "Bruno Teixeira",
+      especialidade: "Ortopedia",
+      cidade: "São Paulo",
+      formacao: [
+        "Graduação em Medicina — Faculdade Médica Paulista (fictícia)",
+        "Residência em Ortopedia Pediátrica — Hospital Infantil Fictício",
+      ],
+      experiencia: ["Atuação em ambulatório infantil (fictício)"],
+    },
+    {
+      id: "med-005",
+      nome: "Juliana Castro",
+      especialidade: "Ortopedia",
+      cidade: "São Paulo",
+      formacao: ["Graduação em Medicina — Universidade Fictícia da Capital"],
+      experiencia: ["Atuação em pronto atendimento ortopédico (fictício)"],
+    },
+    {
+      id: "med-006",
+      nome: "Felipe Rocha",
+      especialidade: "Ortopedia",
+      cidade: "São Paulo",
+      formacao: [
+        "Graduação em Medicina — Universidade Médica do Sudeste (fictícia)",
+        "Residência em Ortopedia e Traumatologia — Hospital Escola Santa Aurora (fictício)",
+      ],
+      experiencia: [
+        "Atuação em cirurgia do joelho com foco em trauma esportivo",
+      ],
+    },
   ] as ReadonlyArray<MedicoControlado>,
 
   evidencias: [
