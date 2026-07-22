@@ -1,0 +1,6 @@
+export * from "./CasoId.ts";
+export * from "./PacienteId.ts";
+export * from "./Observacao.ts";
+export * from "./StatusDaCuradoria.ts";
+export * from "./CriterioDoCaso.ts";
+export * from "./CasoDeCuradoria.ts";
