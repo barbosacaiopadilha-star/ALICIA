@@ -11,7 +11,7 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "test": "node --experimental-strip-types --test infrastructure/alicia/professional/*.test.ts application/alicia/catalog/*.test.ts components/alicia/*.test.ts domain/curadoria/*.test.ts"
+    "test": "node --experimental-strip-types --test infrastructure/alicia/professional/*.test.ts application/alicia/catalog/*.test.ts application/alicia/curadoria/*.test.ts components/alicia/*.test.ts domain/curadoria/*.test.ts"
   },
   "dependencies": {
     "framer-motion": "^11.2.10",
