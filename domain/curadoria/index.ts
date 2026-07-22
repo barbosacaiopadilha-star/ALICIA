@@ -9,3 +9,7 @@ export * from "./ConjuntoElegivel.ts";
 export * from "./FichaDeCompatibilidade.ts";
 export * from "./JustificativaDeSelecao.ts";
 export * from "./CasoDeCuradoria.ts";
+export * from "./MotivoDaEscolha.ts";
+export * from "./MotivoDaExclusao.ts";
+export * from "./HistoricoDeDecisao.ts";
+export * from "./RegistroDeAlteracoes.ts";
