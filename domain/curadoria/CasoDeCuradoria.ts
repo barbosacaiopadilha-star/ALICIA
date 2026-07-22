@@ -1,7 +1,7 @@
 import { CasoId } from "./CasoId.ts";
 import { PacienteId } from "./PacienteId.ts";
 import { Observacao } from "./Observacao.ts";
-import { CriterioDoCaso } from "./CriterioDoCaso.ts";
+import { Criterio } from "./Criterio.ts";
 import {
   statusTerminal,
   transicaoPermitida,
@@ -22,7 +22,7 @@ import {
  */
 export class CasoDeCuradoria {
   private _status: StatusDaCuradoria;
-  private _criterios: CriterioDoCaso[];
+  private _criterios: Criterio[];
   private _observacoes: Observacao[];
   private _snapshotId?: string;
   private readonly _createdAt: Date;
@@ -59,7 +59,7 @@ export class CasoDeCuradoria {
     return this._status;
   }
 
-  get criterios(): ReadonlyArray<CriterioDoCaso> {
+  get criterios(): ReadonlyArray<Criterio> {
     return Object.freeze([...this._criterios]);
   }
 
@@ -107,7 +107,7 @@ export class CasoDeCuradoria {
     this.tocar(em);
   }
 
-  adicionarCriterio(criterio: CriterioDoCaso, em: Date = new Date()): void {
+  adicionarCriterio(criterio: Criterio, em: Date = new Date()): void {
     this.exigirCasoAtivo("adicionarCriterio");
     if (this._criterios.some((existente) => existente.id === criterio.id)) {
       throw new Error(

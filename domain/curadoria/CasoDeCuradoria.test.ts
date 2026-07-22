@@ -4,7 +4,7 @@ import { CasoDeCuradoria } from "./CasoDeCuradoria.ts";
 import { CasoId } from "./CasoId.ts";
 import { PacienteId } from "./PacienteId.ts";
 import { Observacao } from "./Observacao.ts";
-import { CriterioDoCaso } from "./CriterioDoCaso.ts";
+import { Criterio, CriterioObrigatorio } from "./Criterio.ts";
 import {
   STATUS_DA_CURADORIA,
   statusTerminal,
@@ -22,11 +22,11 @@ function casoNovo(): CasoDeCuradoria {
   });
 }
 
-function criterio(id = "crit-001"): CriterioDoCaso {
-  return CriterioDoCaso.create({
+function criterio(id = "crit-001"): Criterio {
+  return CriterioObrigatorio.create({
     id,
-    grupo: "obrigatorio",
     descricao: "Residência na especialidade do caso",
+    origem: "historia_do_paciente",
   });
 }
 
@@ -137,22 +137,6 @@ test("remover critério inexistente falha explicitamente", () => {
   assert.throws(() => caso.removerCriterio("nao-existe"), /não existe/);
 });
 
-test("critério exige grupo válido e descrição não vazia", () => {
-  assert.throws(
-    () =>
-      CriterioDoCaso.create({
-        id: "c",
-        grupo: "ranking" as never,
-        descricao: "x",
-      }),
-    /grupo desconhecido/
-  );
-  assert.throws(
-    () => CriterioDoCaso.create({ id: "c", grupo: "obrigatorio", descricao: " " }),
-    /descricao/
-  );
-});
-
 // ─── Snapshot ───────────────────────────────────────────────────────
 
 test("registrarSnapshot grava id e rejeita vazio", () => {
@@ -181,7 +165,7 @@ test("createdAt é imutável de fato: mutar a cópia exposta não afeta o agrega
 test("coleções expostas são cópias congeladas: mutação externa não vaza", () => {
   const caso = casoNovo();
   caso.adicionarCriterio(criterio());
-  const criterios = caso.criterios as CriterioDoCaso[];
+  const criterios = caso.criterios as Criterio[];
   assert.throws(() => criterios.push(criterio("crit-002")));
   assert.equal(caso.criterios.length, 1);
 });
