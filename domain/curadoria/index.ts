@@ -13,3 +13,5 @@ export * from "./MotivoDaEscolha.ts";
 export * from "./MotivoDaExclusao.ts";
 export * from "./HistoricoDeDecisao.ts";
 export * from "./RegistroDeAlteracoes.ts";
+export * from "./RegistroDeAlteracao.ts";
+export * from "./SessaoDeCuradoria.ts";
